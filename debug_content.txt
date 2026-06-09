@@ -1,0 +1,16 @@
+<USER_REQUEST>
+i want that my ashboards should be professiona like  in sidebar  with profile and all nedd compoenents
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-06-07T10:23:42+05:30.
+
+The user's current state is as follows:
+Active Document: c:\Users\HP\OneDrive\Desktop\Task\frontend\Job application\src\pages\AdminDashboard.jsx (LANGUAGE_JAVASCRIPT)
+Cursor is on line: 22
+Other open documents:
+- c:\Users\HP\OneDrive\Desktop\Task\backend\routes\auth.js (LANGUAGE_JAVASCRIPT)
+- c:\Users\HP\OneDrive\Desktop\Task\backend\routes\admin.js (LANGUAGE_JAVASCRIPT)
+- c:\Users\HP\OneDrive\Desktop\Task\frontend\Job application\src\pages\CompanyDashboard.jsx (LANGUAGE_JAVASCRIPT)
+- c:\Users\HP\OneDrive\Desktop\Task\backend\models\Application.js (LANGUAGE_JAVASCRIPT)
+- c:\Users\HP\OneDrive\Desktop\Task\frontend\Job application\src\pages\CandidateDashboard.jsx (LANGUAGE_JAVASCRIPT)
+</ADDITIONAL_METADATA>
