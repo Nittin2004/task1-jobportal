@@ -2,6 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { postJob } from '../services/api';
+import DashboardLayout from '../components/DashboardLayout';
+
+const NAV_ITEMS = [
+  { key: 'overview',    icon: '📊', label: 'Overview' },
+  { key: 'jobs',        icon: '💼', label: 'My Jobs' },
+  { key: 'applicants',  icon: '👥', label: 'Applicants' },
+];
 
 const PostJob = () => {
   const navigate = useNavigate();
@@ -38,16 +45,17 @@ const PostJob = () => {
   };
 
   return (
-    <div className="page">
-      <div className="container" style={{ maxWidth: 700 }}>
-        <div className="page-header">
-          <h1>Post a New Job 📝</h1>
-          <p>Fill in the details to attract the best candidates</p>
-        </div>
-
+    <DashboardLayout
+      navItems={NAV_ITEMS}
+      activeTab=""
+      onTabChange={() => navigate('/company-dashboard')}
+      title="Post a New Job 📝"
+      subtitle="Fill in the details to attract the best candidates"
+    >
+      <div style={{ maxWidth: 700 }}>
         {error && <div className="alert alert-error">{error}</div>}
 
-        <div className="card">
+        <div className="ds-section-card">
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Job Title *</label>
@@ -73,6 +81,7 @@ const PostJob = () => {
                   required
                 />
               </div>
+              
               <div className="form-group">
                 <label>Salary Range</label>
                 <input
@@ -141,7 +150,7 @@ const PostJob = () => {
               />
             </div>
 
-            <div style={{ display: 'flex', gap: '1rem' }}>
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
               <button
                 type="submit"
                 className="btn-primary"
@@ -162,7 +171,7 @@ const PostJob = () => {
           </form>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

@@ -11,7 +11,7 @@ const router = express.Router();
 const generateToken = (id, role) => {
   return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '7d' });
 };
-
+ 
 // Candidate Register
 router.post('/register/candidate', async (req, res) => {
   try {
@@ -108,7 +108,7 @@ router.get('/profile', async (req, res) => {
 // Update Profile
 router.put('/profile', authMiddleware, async (req, res) => {
   try {
-    const { name, phone, skills, experience, education, industry, location } = req.body;
+    const { name, phone, skills, experience, education, industry, location, website, description, companySize } = req.body;
 
     if (req.user.role === 'candidate') {
       const updatedFields = {};
@@ -136,6 +136,9 @@ router.put('/profile', authMiddleware, async (req, res) => {
       if (phone !== undefined) updatedFields.phone = phone;
       if (industry !== undefined) updatedFields.industry = industry;
       if (location !== undefined) updatedFields.location = location;
+      if (website !== undefined) updatedFields.website = website;
+      if (description !== undefined) updatedFields.description = description;
+      if (companySize !== undefined) updatedFields.companySize = companySize;
 
       const company = await Company.findByIdAndUpdate(
         req.user.id,

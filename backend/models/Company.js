@@ -10,6 +10,7 @@ const companySchema = new mongoose.Schema({
   description: { type: String, default: '' },
   location: { type: String, default: '' },
   logo: { type: String, default: '' },
+  companySize: { type: String, default: '' },
   role: { type: String, default: 'company' },
 }, { timestamps: true });
 

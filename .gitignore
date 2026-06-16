@@ -1,0 +1,22 @@
+# Uploads
+backend/uploads/
+*.pdf
+
+# Environment variables
+# (optional, keep it if it's already tracked, but ignore custom local .env files)
+*.env.local
+*.env.development.local
+*.env.test.local
+*.env.production.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db

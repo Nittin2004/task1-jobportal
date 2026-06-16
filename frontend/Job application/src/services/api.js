@@ -3,20 +3,20 @@ import axios from 'axios';
 const API = axios.create({ baseURL: 'http://localhost:5000/api' });
 
 // Add token to every request
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
+API.interceptors.request.use((config) => {  // Intercept request to add token
+  const token = localStorage.getItem('token'); // Get token from localStorage
+  if (token) config.headers.Authorization = `Bearer ${token}`;  // Add token to headers if it exists 
+  return config;    // Return modified config
 });
 
-// Auth
+// Auth 
 export const registerCandidate = (data) => API.post('/auth/register/candidate', data);
 export const registerCompany = (data) => API.post('/auth/register/company', data);
 export const loginUser = (data) => API.post('/auth/login', data);
 export const getProfile = () => API.get('/auth/profile');
 export const updateProfile = (data) => API.put('/auth/profile', data);
 
-// Jobs
+// Jobs 
 export const getJobs = (params) => API.get('/jobs', { params });
 export const getJobById = (id) => API.get(`/jobs/${id}`);
 export const postJob = (data) => API.post('/jobs', data);
