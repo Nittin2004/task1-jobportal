@@ -62,7 +62,7 @@ const PostJob = () => {
               <input
                 name="title"
                 type="text"
-                placeholder="e.g. Frontend Developer"
+                placeholder="e.g. Frontend Developer, Data Analyst"
                 value={form.title}
                 onChange={handleChange}
                 required

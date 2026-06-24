@@ -34,7 +34,7 @@ const Login = () => {
     <div className="auth-page">
       <div className="auth-card">
         <h1 className='hd text-center'>Login</h1>
-        <p>Login to continue to JobPortal</p>
+        <p>Login to continue to NextHire</p>
 
         <div className="role-tabs">
           {['candidate', 'company', 'admin'].map((r) => (
@@ -70,7 +70,7 @@ const Login = () => {
         )}
         {role === 'admin' && (
           <div className="auth-footer" style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Admin: admin@jobportal.com / Admin@123
+            Admin: admin@nexthire.com / Admin@123
           </div>
         )}
       </div>

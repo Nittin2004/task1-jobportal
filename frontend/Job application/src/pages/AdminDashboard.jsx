@@ -1,4 +1,8 @@
 import { useState, useEffect } from 'react';
+import {
+  PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+} from 'recharts';
 import toast from 'react-hot-toast';
 import {
   getAdminStats,
@@ -110,70 +114,184 @@ const AdminDashboard = () => {
       subtitle="Manage all users, jobs, and applications"
     >
       {/* ===== OVERVIEW / STATS ===== */}
-      {tab === 'stats' && (
-        <div>
-          <div className="ds-stats-grid">
-            <div className="ds-stat-card" style={{ '--accent': '#6366f1' }}>
-              <div className="ds-stat-icon" style={{ background: 'rgba(99,102,241,0.12)', color: '#6366f1' }}>👤</div>
-              <div className="ds-stat-body">
-                <div className="ds-stat-num">{stats?.totalCandidates}</div>
-                <div className="ds-stat-lbl">Total Candidates</div>
-              </div>
-            </div>
-            <div className="ds-stat-card" style={{ '--accent': '#10b981' }}>
-              <div className="ds-stat-icon" style={{ background: 'rgba(16,185,129,0.12)', color: '#10b981' }}>🏢</div>
-              <div className="ds-stat-body">
-                <div className="ds-stat-num">{stats?.totalCompanies}</div>
-                <div className="ds-stat-lbl">Total Companies</div>
-              </div>
-            </div>
-            <div className="ds-stat-card" style={{ '--accent': '#f59e0b' }}>
-              <div className="ds-stat-icon" style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b' }}>💼</div>
-              <div className="ds-stat-body">
-                <div className="ds-stat-num">{stats?.totalJobs}</div>
-                <div className="ds-stat-lbl">Total Jobs</div>
-              </div>
-            </div>
-            <div className="ds-stat-card" style={{ '--accent': '#06b6d4' }}>
-              <div className="ds-stat-icon" style={{ background: 'rgba(6,182,212,0.12)', color: '#06b6d4' }}>✅</div>
-              <div className="ds-stat-body">
-                <div className="ds-stat-num">{stats?.activeJobs}</div>
-                <div className="ds-stat-lbl">Active Jobs</div>
-              </div>
-            </div>
-            <div className="ds-stat-card" style={{ '--accent': '#ec4899' }}>
-              <div className="ds-stat-icon" style={{ background: 'rgba(236,72,153,0.12)', color: '#ec4899' }}>📋</div>
-              <div className="ds-stat-body">
-                <div className="ds-stat-num">{stats?.totalApplications}</div>
-                <div className="ds-stat-lbl">Applications</div>
-              </div>
-            </div>
-          </div>
+      {tab === 'stats' && (() => {
+        // --- Derived chart data (computed from already-fetched state) ---
+        const STATUS_COLORS = {
+          Pending:    '#f59e0b',
+          Reviewed:   '#6366f1',
+          Shortlisted:'#10b981',
+          Rejected:   '#ef4444',
+          Hired:      '#06b6d4',
+        };
+        const appStatusData = ['Pending','Reviewed','Shortlisted','Rejected','Hired'].map(s => ({
+          name: s,
+          value: applications.filter(a => a.status === s).length,
+        })).filter(d => d.value > 0);
 
-          {/* Quick Summary Card */}
-          <div className="ds-section-card">
-            <h3 style={{ fontWeight: 700, marginBottom: '1.25rem' }}>Platform Summary</h3>
-            <div className="ds-summary-grid">
-              <div className="ds-summary-item">
-                <span className="ds-summary-icon">📌</span>
-                <span><strong>{stats?.totalCandidates}</strong> candidates registered on platform</span>
+        const JOB_TYPE_COLORS = ['#6366f1','#10b981','#f59e0b','#ec4899','#06b6d4'];
+        const jobTypes = ['Full-time','Part-time','Remote','Internship','Contract'];
+        const jobTypeData = jobTypes.map(t => ({
+          name: t,
+          count: jobs.filter(j => j.jobType === t).length,
+        })).filter(d => d.count > 0);
+
+        const companyJobMap = {};
+        jobs.forEach(j => {
+          const name = j.company?.name || 'Unknown';
+          companyJobMap[name] = (companyJobMap[name] || 0) + 1;
+        });
+        const topCompaniesData = Object.entries(companyJobMap)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 6)
+          .map(([name, count]) => ({ name, count }));
+
+        return (
+          <div>
+            {/* Stat Cards */}
+            <div className="ds-stats-grid">
+              <div className="ds-stat-card" style={{ '--accent': '#6366f1' }}>
+                <div className="ds-stat-icon" style={{ background: 'rgba(99,102,241,0.12)', color: '#6366f1' }}>👤</div>
+                <div className="ds-stat-body">
+                  <div className="ds-stat-num">{stats?.totalCandidates}</div>
+                  <div className="ds-stat-lbl">Total Candidates</div>
+                </div>
               </div>
-              <div className="ds-summary-item">
-                <span className="ds-summary-icon">📌</span>
-                <span><strong>{stats?.totalCompanies}</strong> companies registered on platform</span>
+              <div className="ds-stat-card" style={{ '--accent': '#10b981' }}>
+                <div className="ds-stat-icon" style={{ background: 'rgba(16,185,129,0.12)', color: '#10b981' }}>🏢</div>
+                <div className="ds-stat-body">
+                  <div className="ds-stat-num">{stats?.totalCompanies}</div>
+                  <div className="ds-stat-lbl">Total Companies</div>
+                </div>
               </div>
-              <div className="ds-summary-item">
-                <span className="ds-summary-icon">📌</span>
-                <span><strong>{stats?.totalJobs}</strong> jobs posted ({stats?.activeJobs} currently active)</span>
+              <div className="ds-stat-card" style={{ '--accent': '#f59e0b' }}>
+                <div className="ds-stat-icon" style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b' }}>💼</div>
+                <div className="ds-stat-body">
+                  <div className="ds-stat-num">{stats?.totalJobs}</div>
+                  <div className="ds-stat-lbl">Total Jobs</div>
+                </div>
               </div>
-              <div className="ds-summary-item">
-                <span className="ds-summary-icon">📌</span>
-                <span><strong>{stats?.totalApplications}</strong> total applications submitted</span>
+              <div className="ds-stat-card" style={{ '--accent': '#06b6d4' }}>
+                <div className="ds-stat-icon" style={{ background: 'rgba(6,182,212,0.12)', color: '#06b6d4' }}>✅</div>
+                <div className="ds-stat-body">
+                  <div className="ds-stat-num">{stats?.activeJobs}</div>
+                  <div className="ds-stat-lbl">Active Jobs</div>
+                </div>
+              </div>
+              <div className="ds-stat-card" style={{ '--accent': '#ec4899' }}>
+                <div className="ds-stat-icon" style={{ background: 'rgba(236,72,153,0.12)', color: '#ec4899' }}>📋</div>
+                <div className="ds-stat-body">
+                  <div className="ds-stat-num">{stats?.totalApplications}</div>
+                  <div className="ds-stat-lbl">Applications</div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Charts Row ── */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginTop: '1.5rem' }}>
+
+              {/* Chart 1 — Application Status Donut */}
+              <div className="ds-section-card" style={{ minHeight: 320 }}>
+                <h3 style={{ fontWeight: 700, marginBottom: '1rem', fontSize: '1rem' }}>📊 Application Status Breakdown</h3>
+                {appStatusData.length === 0 ? (
+                  <p style={{ color: 'var(--text-muted)', textAlign: 'center', paddingTop: '3rem' }}>No application data yet</p>
+                ) : (
+                  <ResponsiveContainer width="100%" height={240}>
+                    <PieChart>
+                      <Pie
+                        data={appStatusData}
+                        cx="50%" cy="50%"
+                        innerRadius={60} outerRadius={95}
+                        paddingAngle={3}
+                        dataKey="value"
+                      >
+                        {appStatusData.map((entry) => (
+                          <Cell key={entry.name} fill={STATUS_COLORS[entry.name]} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{ background: 'var(--ds-bg)', border: '1px solid var(--ds-border)', borderRadius: 8, color: 'var(--text-main)' }}
+                        formatter={(val, name) => [`${val} applications`, name]}
+                      />
+                      <Legend iconType="circle" iconSize={10} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+
+              {/* Chart 2 — Jobs by Type */}
+              <div className="ds-section-card" style={{ minHeight: 320 }}>
+                <h3 style={{ fontWeight: 700, marginBottom: '1rem', fontSize: '1rem' }}>💼 Jobs by Type</h3>
+                {jobTypeData.length === 0 ? (
+                  <p style={{ color: 'var(--text-muted)', textAlign: 'center', paddingTop: '3rem' }}>No job data yet</p>
+                ) : (
+                  <ResponsiveContainer width="100%" height={240}>
+                    <BarChart data={jobTypeData} barCategoryGap="30%">
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" vertical={false} />
+                      <XAxis dataKey="name" tick={{ fill: 'var(--text-muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
+                      <YAxis allowDecimals={false} tick={{ fill: 'var(--text-muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
+                      <Tooltip
+                        contentStyle={{ background: 'var(--ds-bg)', border: '1px solid var(--ds-border)', borderRadius: 8, color: 'var(--text-main)' }}
+                        formatter={(val) => [`${val} jobs`]}
+                        cursor={{ fill: 'rgba(99,102,241,0.06)' }}
+                      />
+                      <Bar dataKey="count" radius={[6, 6, 0, 0]}>
+                        {jobTypeData.map((_, i) => (
+                          <Cell key={i} fill={JOB_TYPE_COLORS[i % JOB_TYPE_COLORS.length]} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+
+              {/* Chart 3 — Top Companies by Job Count */}
+              <div className="ds-section-card" style={{ minHeight: 320, gridColumn: topCompaniesData.length > 3 ? 'span 2' : 'span 1' }}>
+                <h3 style={{ fontWeight: 700, marginBottom: '1rem', fontSize: '1rem' }}>🏢 Top Companies by Jobs Posted</h3>
+                {topCompaniesData.length === 0 ? (
+                  <p style={{ color: 'var(--text-muted)', textAlign: 'center', paddingTop: '3rem' }}>No data yet</p>
+                ) : (
+                  <ResponsiveContainer width="100%" height={240}>
+                    <BarChart data={topCompaniesData} layout="vertical" barCategoryGap="25%">
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border)" horizontal={false} />
+                      <XAxis type="number" allowDecimals={false} tick={{ fill: 'var(--text-muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
+                      <YAxis type="category" dataKey="name" width={110} tick={{ fill: 'var(--text-muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
+                      <Tooltip
+                        contentStyle={{ background: 'var(--ds-bg)', border: '1px solid var(--ds-border)', borderRadius: 8, color: 'var(--text-main)' }}
+                        formatter={(val) => [`${val} jobs posted`]}
+                        cursor={{ fill: 'rgba(16,185,129,0.06)' }}
+                      />
+                      <Bar dataKey="count" fill="#10b981" radius={[0, 6, 6, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+            </div>
+
+            {/* Quick Summary Card */}
+            <div className="ds-section-card" style={{ marginTop: '1.5rem' }}>
+              <h3 style={{ fontWeight: 700, marginBottom: '1.25rem' }}>Platform Summary</h3>
+              <div className="ds-summary-grid">
+                <div className="ds-summary-item">
+                  <span className="ds-summary-icon">📌</span>
+                  <span><strong>{stats?.totalCandidates}</strong> candidates registered on platform</span>
+                </div>
+                <div className="ds-summary-item">
+                  <span className="ds-summary-icon">📌</span>
+                  <span><strong>{stats?.totalCompanies}</strong> companies registered on platform</span>
+                </div>
+                <div className="ds-summary-item">
+                  <span className="ds-summary-icon">📌</span>
+                  <span><strong>{stats?.totalJobs}</strong> jobs posted ({stats?.activeJobs} currently active)</span>
+                </div>
+                <div className="ds-summary-item">
+                  <span className="ds-summary-icon">📌</span>
+                  <span><strong>{stats?.totalApplications}</strong> total applications submitted</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ===== CANDIDATES ===== */}
       {tab === 'candidates' && (

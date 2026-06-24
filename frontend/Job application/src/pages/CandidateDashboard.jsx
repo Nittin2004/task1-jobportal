@@ -17,6 +17,8 @@ const NAV_ITEMS = [
   { key: 'overview',      icon: '📊', label: 'Overview' },
   { key: 'applications',  icon: '📋', label: 'My Applications' },
   { key: 'saved',         icon: '❤️',  label: 'Saved Jobs' },
+  { key: 'preparation',   icon: '🚀', label: 'My Preparation' },
+  { key: 'mentorship',    icon: '📅', label: 'My Mentorships' },
   { key: 'profile',       icon: '👤', label: 'My Profile' },
 ];
 
@@ -31,6 +33,19 @@ const CandidateDashboard = () => {
   const [editForm, setEditForm] = useState({ name: '', phone: '', skills: '', experience: '', education: '' });
   const [resumeFile, setResumeFile] = useState(null);
   const [saving, setSaving] = useState(false);
+
+  // New State for Mock Data & Stats
+  const [dsaSolvedCount, setDsaSolvedCount] = useState(0);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('dsa_solved');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setDsaSolvedCount(Object.values(parsed).filter(Boolean).length);
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -192,6 +207,152 @@ const CandidateDashboard = () => {
                 ))}
               </div>
             )}
+          </div>
+          
+          {/* Smart Job Recommendations & ATS Score */}
+          <div className="ds-overview-bottom-grid">
+            {/* Recommendations */}
+            <div className="ds-section-card">
+              <div className="ds-section-header">
+                <h3>🎯 Recommended for You</h3>
+                <Link to="/jobs"><button className="ds-link-btn">View All →</button></Link>
+              </div>
+              <div className="ds-list">
+                {/* Mock Job 1 */}
+                <div className="ds-list-item">
+                  <div className="ds-list-avatar" style={{ background: '#e0e7ff', color: '#4f46e5' }}>G</div>
+                  <div className="ds-list-body">
+                    <p className="ds-list-title">Frontend Developer (React)</p>
+                    <p className="ds-list-sub">Global Tech · 90% Match</p>
+                  </div>
+                  <Link to="/jobs"><button className="btn-secondary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}>View</button></Link>
+                </div>
+                {/* Mock Job 2 */}
+                <div className="ds-list-item">
+                  <div className="ds-list-avatar" style={{ background: '#dcfce7', color: '#16a34a' }}>S</div>
+                  <div className="ds-list-body">
+                    <p className="ds-list-title">Full Stack Engineer</p>
+                    <p className="ds-list-sub">Startup Inc · 85% Match</p>
+                  </div>
+                  <Link to="/jobs"><button className="btn-secondary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}>View</button></Link>
+                </div>
+              </div>
+            </div>
+
+            {/* ATS Score / Profile Strength */}
+            <div className="ds-section-card ds-ats-card">
+              <h3>📄 Profile Strength & ATS</h3>
+              <div className="ds-ats-circle-wrap">
+                <div className="ds-ats-circle">
+                  <svg viewBox="0 0 36 36" className="circular-chart">
+                    <path className="circle-bg"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                    <path className="circle-progress"
+                      strokeDasharray="75, 100"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                    <text x="18" y="20.35" className="percentage">75%</text>
+                  </svg>
+                </div>
+                <div className="ds-ats-text">
+                  <p><strong>Good Strength</strong></p>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.2rem' }}>Add more skills to reach 90% and boost your ATS ranking.</p>
+                  <Link to="/ats-scanner">
+                    <button className="btn-secondary" style={{ width: '100%', marginTop: '0.75rem' }}>Scan ATS Score</button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== PREPARATION ===== */}
+      {tab === 'preparation' && (
+        <div>
+          <div className="ds-page-title-row">
+            <h2>My Preparation Hub</h2>
+            <Link to="/preparation"><button className="btn-secondary" style={{ fontSize: '0.85rem' }}>Explore Courses</button></Link>
+          </div>
+          
+          <div className="ds-prep-grid">
+            {/* DSA Progress */}
+            <div className="ds-section-card ds-dsa-card">
+              <div className="ds-dsa-header">
+                <div>
+                  <h3>💡 DSA Master Sheet</h3>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.2rem' }}>Track your coding interview prep</p>
+                </div>
+                <div className="ds-dsa-score">
+                  <span className="ds-dsa-num">{dsaSolvedCount}</span>
+                  <span className="ds-dsa-den">/ 400</span>
+                </div>
+              </div>
+              <div className="ds-progress-bg" style={{ height: 8, background: '#e2e8f0', borderRadius: 4, marginTop: '1rem', overflow: 'hidden' }}>
+                <div className="ds-progress-fill" style={{ width: `${Math.min(100, (dsaSolvedCount / 400) * 100)}%`, height: '100%', background: '#6366f1', borderRadius: 4 }} />
+              </div>
+              <Link to="/preparation/dsasheet">
+                <button className="btn-primary" style={{ width: '100%', marginTop: '1.5rem' }}>Continue Solving</button>
+              </Link>
+            </div>
+
+            {/* Enrolled Courses */}
+            <div className="ds-section-card">
+              <h3>📚 Enrolled Courses</h3>
+              <div className="ds-list" style={{ marginTop: '1rem' }}>
+                <div className="ds-list-item" style={{ alignItems: 'flex-start' }}>
+                  <div className="ds-list-avatar" style={{ background: '#fef08a', color: '#854d0e', borderRadius: '8px' }}>JS</div>
+                  <div className="ds-list-body" style={{ width: '100%' }}>
+                    <p className="ds-list-title">Advanced JavaScript Concepts</p>
+                    <p className="ds-list-sub">4/12 Modules Completed</p>
+                    <div className="ds-progress-bg" style={{ height: 4, background: '#e2e8f0', borderRadius: 2, marginTop: '0.5rem', overflow: 'hidden' }}>
+                      <div className="ds-progress-fill" style={{ width: '33%', height: '100%', background: '#10b981' }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== MENTORSHIP ===== */}
+      {tab === 'mentorship' && (
+        <div>
+          <div className="ds-page-title-row">
+            <h2>My Mentorships</h2>
+            <Link to="/mentors"><button className="btn-primary" style={{ fontSize: '0.85rem' }}>Find a Mentor</button></Link>
+          </div>
+
+          <div className="ds-section-card">
+            <h3>Upcoming Sessions</h3>
+            <div className="ds-cards-grid" style={{ marginTop: '1rem' }}>
+              <div className="ds-mentor-session-card">
+                <div className="ds-ms-header">
+                  <div className="ds-ms-date">
+                    <span className="ds-ms-month">OCT</span>
+                    <span className="ds-ms-day">24</span>
+                  </div>
+                  <div className="ds-ms-info">
+                    <h4>Mock Interview (DSA)</h4>
+                    <p>with <strong>Sarah Jenkins</strong> (Google SDE)</p>
+                  </div>
+                </div>
+                <div className="ds-ms-details">
+                  <p>🕒 10:00 AM - 11:00 AM IST</p>
+                  <p>📹 Google Meet</p>
+                </div>
+                <button className="btn-primary" style={{ width: '100%', marginTop: '1rem', background: '#10b981', borderColor: '#10b981' }}>Join Call</button>
+              </div>
+            </div>
+          </div>
+
+          <div className="ds-section-card" style={{ marginTop: '1.5rem' }}>
+            <h3>Past Feedback</h3>
+            <div className="ds-empty-mini">
+              <p>No past sessions yet. Book a session to get personalized feedback!</p>
+            </div>
           </div>
         </div>
       )}

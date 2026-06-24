@@ -49,3 +49,14 @@ export const getAllApplications = () => API.get('/admin/applications');
 export const adminDeleteCandidate = (id) => API.delete(`/admin/candidates/${id}`);
 export const adminDeleteCompany = (id) => API.delete(`/admin/companies/${id}`);
 export const adminDeleteJob = (id) => API.delete(`/admin/jobs/${id}`);
+
+// Academy & Courses
+export const getCourses = () => API.get('/courses');
+export const getCourseById = (id) => API.get(`/courses/${id}`);
+export const enrollInCourse = (id) => API.post(`/courses/${id}/enroll`);
+
+// Mentorship
+export const getMentors = () => API.get('/mentorship/mentors');
+export const bookMentorship = (data) => API.post('/mentorship/book', data);
+export const getMyBookings = () => API.get('/mentorship/my-bookings');
+export const updateBookingStatus = (id, data) => API.put(`/mentorship/${id}/status`, data);

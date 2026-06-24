@@ -18,6 +18,12 @@ import CompanyDashboard from './pages/CompanyDashboard';
 import PostJob from './pages/PostJob';
 import AdminDashboard from './pages/AdminDashboard';
 import Preparation from './pages/Preparation';
+import AcademyDashboard from './pages/AcademyDashboard';
+import Mentorship from './pages/Mentorship';
+import DSACheatSheet from './pages/DSACheatSheet';
+import DSALeaderboard from './pages/DSALeaderboard';
+import ResumeScanner from './pages/ResumeScanner';
+import CoursePlayer from './pages/CoursePlayer';
 
 import './index.css';
 
@@ -32,14 +38,15 @@ const DASHBOARD_PATHS = [
 function AppLayout() {
   const location = useLocation();
   const isDashboard = DASHBOARD_PATHS.some((p) => location.pathname.startsWith(p));
+  const isDSA = location.pathname === '/dsa';
 
   return (
     <>
       <ScrollToTop />
     
       <Toaster position="top-right" />
-      {!isDashboard && <Navbar />}
-      <main className={isDashboard ? '' : 'main-content'}>
+      {!isDashboard && !isDSA && <Navbar />}
+      <main className={isDashboard ? '' : isDSA ? 'main-content main-content--dsa' : 'main-content'}>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
@@ -50,6 +57,12 @@ function AppLayout() {
           <Route path="/jobs/:id" element={<JobDetail />} />
           <Route path="/preparation" element={<Preparation />} />
           <Route path="/preparation/:module" element={<Preparation />} />
+          <Route path="/academy" element={<AcademyDashboard />} />
+          <Route path="/academy/course/:id" element={<CoursePlayer />} />
+          <Route path="/mentors" element={<Mentorship />} />
+          <Route path="/dsa" element={<DSACheatSheet />} />
+          <Route path="/preparation/leaderboard" element={<DSALeaderboard />} />
+          <Route path="/ats-scanner" element={<ResumeScanner />} />
 
           {/* Protected Routes */}
           <Route path="/apply/:id" element={
@@ -93,7 +106,7 @@ function AppLayout() {
           } />
         </Routes>
       </main>
-      {!isDashboard && <Footer />}
+      {!isDashboard && !isDSA && <Footer />}
     </>
   );
 }

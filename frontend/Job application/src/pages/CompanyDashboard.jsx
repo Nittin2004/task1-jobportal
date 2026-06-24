@@ -88,7 +88,7 @@ const CompanyDashboard = () => {
       toast.success('Company profile updated successfully');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update profile');
-    } finally {
+    } finally {``
       setSaving(false);
     }
   };

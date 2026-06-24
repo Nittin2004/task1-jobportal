@@ -51,7 +51,7 @@ router.post('/login', async (req, res) => {
 
     // Admin login
     if (role === 'admin') {
-      if (email === 'admin@jobportal.com' && password === 'Admin@123') {
+      if (email === 'admin@nexthire.com' && password === 'Admin@123') {
         const token = jwt.sign({ id: 'admin', role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '7d' });
         return res.json({ token, user: { id: 'admin', name: 'Admin', email, role: 'admin' } });
       }

@@ -8,7 +8,7 @@ const Footer = () => {
 
           {/* Brand */}
           <div className="footer-brand">
-            <h2>💼 JobPortal</h2>
+            <h2>💼 NextHire</h2>
             <p>Connecting talented candidates with top companies across India. Your career journey starts here.</p>
           </div>
 
@@ -38,7 +38,7 @@ const Footer = () => {
           <div className="footer-col">
             <h4>Contact</h4>
             <ul>
-              <li>📧 support@jobportal.com</li>
+              <li>📧 support@nexthire.com</li>
               <li>📞 +91 98765 43210</li>
               <li>📍 Mumbai, India</li>
             </ul>
@@ -47,7 +47,7 @@ const Footer = () => {
         </div>
 
         <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} JobPortal. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} NextHire. All rights reserved.</p>
           <div className="footer-links">
             <span>Privacy Policy</span>
             <span>Terms of Service</span>

@@ -15,15 +15,20 @@ app.use(express.json()); // Parse incoming JSON requests
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
-app.use('/api/auth', require('./routes/auth')); //
+app.use('/api/auth', require('./routes/auth')); // nittin
 app.use('/api/jobs', require('./routes/jobs'));
 app.use('/api/applications', require('./routes/applications'));
+app.use('/api/compiler', require('./routes/compiler'));
+app.use('/api/leetcode', require('./routes/leetcode'));
 app.use('/api/saved-jobs', require('./routes/savedJobs'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/resume', require('./routes/resume'));
+app.use('/api/courses', require('./routes/courses'));
+app.use('/api/mentorship', require('./routes/mentorship'));
+app.use('/api/compiler', require('./routes/compiler'));
 
 // Health check
-app.get('/', (req, res) => res.json({ message: 'Job Portal API is running!' }));
+app.get('/', (req, res) => res.json({ message: 'NextHire API is running!' }));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

@@ -38,7 +38,7 @@ const DashboardLayout = ({ navItems, activeTab, onTabChange, children, title, su
           <Link to="/" className="ds-brand-link">
             <div className="ds-brand-icon">💼</div>
             <div className="ds-brand-text">
-              <span className="ds-brand-name">JobPortal</span>
+              <span className="ds-brand-name">NextHire</span>
               <span className="ds-brand-tagline">Find your dream job</span>
             </div>
           </Link>
