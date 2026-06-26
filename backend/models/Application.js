@@ -12,4 +12,8 @@ const applicationSchema = new mongoose.Schema({
   status: { type: String, enum: ['Pending', 'Reviewed', 'Shortlisted', 'Rejected', 'Hired'], default: 'Pending' },
 }, { timestamps: true });
 
+applicationSchema.index({ candidate: 1, createdAt: -1 });
+applicationSchema.index({ job: 1 });
+applicationSchema.index({ candidate: 1, job: 1 }, { unique: true });
+
 module.exports = mongoose.model('Application', applicationSchema);

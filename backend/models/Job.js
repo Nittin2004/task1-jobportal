@@ -13,5 +13,10 @@ const jobSchema = new mongoose.Schema({
   deadline: { type: Date },
 }, { timestamps: true });
 
+jobSchema.index({ isActive: 1, createdAt: -1 });
+jobSchema.index({ title: 'text', location: 1 });
+jobSchema.index({ category: 1, jobType: 1 });
+jobSchema.index({ company: 1 });
+
 module.exports = mongoose.model('Job', jobSchema);
   

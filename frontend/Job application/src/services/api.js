@@ -60,3 +60,8 @@ export const getMentors = () => API.get('/mentorship/mentors');
 export const bookMentorship = (data) => API.post('/mentorship/book', data);
 export const getMyBookings = () => API.get('/mentorship/my-bookings');
 export const updateBookingStatus = (id, data) => API.put(`/mentorship/${id}/status`, data);
+
+// Payment
+export const createPaymentOrder = () => API.post('/payment/create-order');
+export const verifyPayment = (data) => API.post('/payment/verify', data);
+export default API;

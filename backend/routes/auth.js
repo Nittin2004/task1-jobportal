@@ -51,7 +51,9 @@ router.post('/login', async (req, res) => {
 
     // Admin login
     if (role === 'admin') {
-      if (email === 'admin@nexthire.com' && password === 'Admin@123') {
+      const adminEmail = process.env.ADMIN_EMAIL || 'admin@nexthire.com';
+      const adminPass  = process.env.ADMIN_PASSWORD || 'Admin@123';
+      if (email === adminEmail && password === adminPass) {
         const token = jwt.sign({ id: 'admin', role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '7d' });
         return res.json({ token, user: { id: 'admin', name: 'Admin', email, role: 'admin' } });
       }

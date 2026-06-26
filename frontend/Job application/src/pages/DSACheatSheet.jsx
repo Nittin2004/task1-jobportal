@@ -2,6 +2,9 @@ import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { DSA_TOPICS, ALL_QUESTIONS } from '../data/dsaData';
 import toast from 'react-hot-toast';
+import { getProfile } from '../services/api';
+import PremiumModal from '../components/PremiumModal';
+import { Lock } from 'lucide-react';
 
 // ── localStorage helpers ────────────────────────────────────────────────────
 const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
@@ -67,28 +70,22 @@ const TEMPLATES = {
 // Pattern: ${p}
 // ──────────────────────────────────────────────
 
-/**
- * Write your solution here
- */
 function solve() {
+  // Write your solution here
   
 }
 
-// Test your solution
-console.log(solve());`,
+solve();`,
 
   python: (t, p) => `# ${t}
 # Pattern: ${p}
 # ──────────────────────────────────────────────
 
-class Solution:
-    def solve(self):
-        # Write your solution here
-        pass
+def solve():
+    # Write your solution here
+    pass
 
-# Test your solution
-sol = Solution()
-print(sol.solve())`,
+solve()`,
 
   java: (t, p) => `// ${t}
 // Pattern: ${p}
@@ -96,16 +93,10 @@ print(sol.solve())`,
 
 import java.util.*;
 
-class Solution {
-    public void solve() {
+public class Main {
+    public static void main(String[] args) {
         // Write your solution here
         
-    }
-    
-    public static void main(String[] args) {
-        Solution sol = new Solution();
-        sol.solve();
-        System.out.println("Done");
     }
 }`,
 
@@ -116,20 +107,12 @@ class Solution {
 #include <bits/stdc++.h>
 using namespace std;
 
-class Solution {
-public:
-    void solve() {
-        // Write your solution here
-        
-    }
-};
-
 int main() {
-    Solution sol;
-    sol.solve();
-    cout << "Done" << endl;
+    // Write your solution here
+    
     return 0;
-}`,
+}
+`
 };
 
 // ── Diff badge ───────────────────────────────────────────────────────────────
@@ -145,7 +128,7 @@ const STATUS_META = {
   tle:           { color: '#f59e0b', bg: 'rgba(245,158,11,0.10)', border: 'rgba(245,158,11,0.3)',  icon: '⏱', label: 'Time Limit Exceeded' },
   compile_error: { color: '#ef4444', bg: 'rgba(239,68,68,0.10)',  border: 'rgba(239,68,68,0.3)',   icon: '⚠', label: 'Compilation Error' },
   runtime_error: { color: '#ef4444', bg: 'rgba(239,68,68,0.10)',  border: 'rgba(239,68,68,0.3)',   icon: '💥', label: 'Runtime Error' },
-  pending:       { color: '#8b949e', bg: 'rgba(139,148,158,0.10)',border: 'rgba(139,148,158,0.3)', icon: '⏳', label: 'Processing' },
+  pending:       { color: 'var(--dsa-text-muted)', bg: 'rgba(139,148,158,0.10)',border: 'rgba(139,148,158,0.3)', icon: '⏳', label: 'Processing' },
   finished:      { color: '#2ea043', bg: 'rgba(46,160,67,0.12)',  border: 'rgba(46,160,67,0.3)',   icon: '✓', label: 'Execution Complete' },
 };
 
@@ -165,12 +148,12 @@ const StatusBadge = ({ kind }) => {
 
 const InfoBox = ({ label, value, accent }) => (
   <div style={{ marginTop: '0.75rem' }}>
-    <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.35rem' }}>{label}</div>
+    <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--dsa-text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.35rem' }}>{label}</div>
     <pre style={{
       margin: 0, padding: '0.65rem 0.9rem', borderRadius: '8px',
-      background: accent ? 'rgba(46,160,67,0.07)' : '#0d1117',
-      border: `1px solid ${accent ? 'rgba(46,160,67,0.25)' : '#30363d'}`,
-      color: accent ? '#2ea043' : '#e6edf3',
+      background: accent ? 'rgba(46,160,67,0.07)' : 'var(--dsa-bg-primary)',
+      border: `1px solid ${accent ? 'rgba(46,160,67,0.25)' : 'var(--dsa-border)'}`,
+      color: accent ? '#2ea043' : 'var(--dsa-text)',
       fontFamily: 'monospace', fontSize: '0.85rem', lineHeight: 1.5,
       overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
     }}>{value || '(empty)'}</pre>
@@ -206,6 +189,8 @@ const CompilerPanel = ({ question }) => {
   // raw testcase data from backend
   const [examples, setExamples]         = useState([]); // [{ stdin, rawStdin, expectedOutput }]
   const [customStdin, setCustomStdin]   = useState('');
+  const [questionMeta, setQuestionMeta] = useState(null);
+  const [snippets, setSnippets]         = useState({});
 
   const taRef = useRef(null);
   const langs = ['javascript', 'python', 'java', 'cpp'];
@@ -235,7 +220,7 @@ const CompilerPanel = ({ question }) => {
 
   // ── fetch testcases whenever question / lang changes ─────────────────────
   useEffect(() => {
-    setCode(TEMPLATES[lang](question.title, question.pattern));
+    setCode(snippets[lang] || TEMPLATES[lang](question.title, question.pattern));
     setCaseResults([]);
     setGlobalStatus(null);
     setGlobalError('');
@@ -253,6 +238,20 @@ const CompilerPanel = ({ question }) => {
     fetch(`http://localhost:5000/api/leetcode/${slug}`)
       .then(r => r.json())
       .then(d => {
+        setQuestionMeta(d.metaData);
+        if (d.codeSnippets) {
+          const snipMap = {};
+          d.codeSnippets.forEach(s => {
+            if (s.langSlug === 'javascript') snipMap.javascript = s.code;
+            if (s.langSlug === 'python' || s.langSlug === 'python3') snipMap.python = s.code;
+            if (s.langSlug === 'java') snipMap.java = s.code;
+            if (s.langSlug === 'cpp') snipMap.cpp = s.code;
+          });
+          setSnippets(snipMap);
+          // Auto-apply snippet if we just loaded it for the active lang
+          if (snipMap[lang]) setCode(snipMap[lang]);
+        }
+
         if (d.examples && d.examples.length > 0) {
           setExamples(d.examples);
           setCustomStdin(d.examples[0]?.stdin || '');
@@ -298,14 +297,114 @@ const CompilerPanel = ({ question }) => {
   const langMismatch = detectedLang !== lang;
   const LANG_LABEL = { javascript: 'JavaScript', python: 'Python', java: 'Java', cpp: 'C++' };
 
-  const handleTab = (e) => {
-    if (e.key !== 'Tab') return;
-    e.preventDefault();
+  // ── Smart editor key handler (brackets, indentation) ──────────────────────
+  const handleKeyDown = (e) => {
     const ta = taRef.current;
-    const s = ta.selectionStart, en = ta.selectionEnd;
-    const next = code.substring(0, s) + '  ' + code.substring(en);
-    setCode(next);
-    setTimeout(() => { ta.selectionStart = ta.selectionEnd = s + 2; }, 0);
+    const s = ta.selectionStart;
+    const en = ta.selectionEnd;
+    const val = code;
+    const before = val.substring(0, s);
+    const after  = val.substring(en);
+
+    // ── Tab: insert 2 spaces ──────────────────────────────────────────────
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const next = before + '  ' + after;
+      setCode(next);
+      setTimeout(() => { ta.selectionStart = ta.selectionEnd = s + 2; }, 0);
+      return;
+    }
+
+    // ── Auto-close bracket pairs ──────────────────────────────────────────
+    const PAIRS = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
+    const CLOSE_CHARS = new Set(['}', ')', ']', '"', "'"]);
+
+    if (PAIRS[e.key]) {
+      // If text is selected, wrap it
+      if (s !== en) {
+        e.preventDefault();
+        const selected = val.substring(s, en);
+        const next = before + e.key + selected + PAIRS[e.key] + after;
+        setCode(next);
+        setTimeout(() => { ta.selectionStart = s + 1; ta.selectionEnd = en + 1; }, 0);
+        return;
+      }
+      // Don't double-close if next char is already the closing pair
+      const nextChar = after[0];
+      if (e.key === nextChar) {
+        // Just skip over it
+        e.preventDefault();
+        setTimeout(() => { ta.selectionStart = ta.selectionEnd = s + 1; }, 0);
+        return;
+      }
+      // Insert pair
+      e.preventDefault();
+      const next = before + e.key + PAIRS[e.key] + after;
+      setCode(next);
+      setTimeout(() => { ta.selectionStart = ta.selectionEnd = s + 1; }, 0);
+      return;
+    }
+
+    // ── Skip over closing bracket if already present ──────────────────────
+    if (CLOSE_CHARS.has(e.key) && after[0] === e.key && e.key !== '"' && e.key !== "'") {
+      e.preventDefault();
+      setTimeout(() => { ta.selectionStart = ta.selectionEnd = s + 1; }, 0);
+      return;
+    }
+
+    // ── Backspace: remove paired empty brackets ────────────────────────────
+    if (e.key === 'Backspace' && s === en) {
+      const charBefore = before[before.length - 1];
+      const charAfter  = after[0];
+      if (PAIRS[charBefore] === charAfter) {
+        e.preventDefault();
+        const next = before.slice(0, -1) + after.slice(1);
+        setCode(next);
+        setTimeout(() => { ta.selectionStart = ta.selectionEnd = s - 1; }, 0);
+        return;
+      }
+    }
+
+    // ── Enter: smart indentation ──────────────────────────────────────────
+    if (e.key === 'Enter' && s === en) {
+      e.preventDefault();
+      // Get current line's leading whitespace
+      const lineStart = before.lastIndexOf('\n') + 1;
+      const currentLine = before.substring(lineStart);
+      const indent = currentLine.match(/^(\s*)/)[1];
+      const lastChar = before.trimEnd().slice(-1);
+      const firstAfter = after.trimStart()[0];
+
+      // Opening bracket → add extra indent + closing bracket on new line
+      if (lastChar === '{' || lastChar === '(' || lastChar === '[') {
+        const closing = PAIRS[lastChar];
+        if (after.trimStart().startsWith(closing)) {
+          // closing bracket is right after cursor — split into 3 lines
+          e.preventDefault();
+          const inner = '\n' + indent + '  \n' + indent + closing;
+          const next = before + inner + after.trimStart().slice(1);
+          setCode(next);
+          const pos = s + indent.length + 3; // position inside the middle (empty) line
+          setTimeout(() => { ta.selectionStart = ta.selectionEnd = pos; }, 0);
+        } else {
+          // No matching closing bracket right after — just increase indent
+          const next = before + '\n' + indent + '  ' + after;
+          setCode(next);
+          setTimeout(() => { ta.selectionStart = ta.selectionEnd = s + indent.length + 3; }, 0);
+        }
+      } else if (lastChar === ':' && lang === 'python') {
+        // Python colon: indent
+        const next = before + '\n' + indent + '    ' + after;
+        setCode(next);
+        setTimeout(() => { ta.selectionStart = ta.selectionEnd = s + indent.length + 5; }, 0);
+      } else {
+        // Plain Enter: keep same indent
+        const next = before + '\n' + indent + after;
+        setCode(next);
+        setTimeout(() => { ta.selectionStart = ta.selectionEnd = s + indent.length + 1; }, 0);
+      }
+      return;
+    }
   };
 
 
@@ -355,7 +454,7 @@ const CompilerPanel = ({ question }) => {
               language: effectiveLang,
               code,
               stdin: rawStdin,
-              // NO expected_output – Judge0 will not compare
+              metaData: questionMeta,
             }),
           });
           if (!response.ok) throw new Error(`Server responded with ${response.status}`);
@@ -428,7 +527,10 @@ const CompilerPanel = ({ question }) => {
               <button
                 key={l}
                 className={`dsa2-lang-tab ${lang === l ? 'active' : ''}`}
-                onClick={() => setLang(l)}
+                onClick={() => {
+                  setLang(l);
+                  setCode(snippets[l] || TEMPLATES[l](question.title, question.pattern));
+                }}
                 style={isDetected ? { position: 'relative' } : {}}
               >
                 {labelMap[l]}
@@ -436,7 +538,7 @@ const CompilerPanel = ({ question }) => {
                   <span title="Detected language" style={{
                     position: 'absolute', top: '-5px', right: '-5px',
                     width: '8px', height: '8px', borderRadius: '50%',
-                    background: '#f59e0b', border: '2px solid #0d1117',
+                    background: '#f59e0b', border: '2px solid var(--dsa-bg-primary)',
                   }} />
                 )}
               </button>
@@ -485,7 +587,7 @@ const CompilerPanel = ({ question }) => {
           className="dsa2-textarea"
           value={code}
           onChange={e => setCode(e.target.value)}
-          onKeyDown={handleTab}
+          onKeyDown={handleKeyDown}
           spellCheck={false}
           autoCorrect="off"
           autoCapitalize="off"
@@ -497,7 +599,7 @@ const CompilerPanel = ({ question }) => {
         onMouseDown={() => setIsDragging(true)}
         style={{
           height: '6px',
-          background: isDragging ? '#1f6feb' : '#30363d',
+          background: isDragging ? '#1f6feb' : 'var(--dsa-border)',
           cursor: 'row-resize',
           flexShrink: 0,
           transition: 'background 0.2s',
@@ -509,7 +611,7 @@ const CompilerPanel = ({ question }) => {
       <div className="dsa2-console" style={{ 
         height: `${consoleHeight}px`, flexShrink: 0, 
         display: 'flex', flexDirection: 'column', overflow: 'hidden', 
-        padding: '0.75rem 1rem', background: '#0d1117' 
+        padding: '0.75rem 1rem', background: 'var(--dsa-bg-primary)' 
       }}>
         {/* tabs */}
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.75rem', flexShrink: 0 }}>
@@ -543,7 +645,7 @@ const CompilerPanel = ({ question }) => {
                     style={{
                       padding: '0.35rem 0.9rem', borderRadius: '8px', border: 'none', cursor: 'pointer',
                       fontWeight: 600, fontSize: '0.82rem', transition: 'all 0.2s',
-                      background: activeCase === idx ? 'rgba(31,111,235,0.15)' : '#1e2329',
+                      background: activeCase === idx ? 'rgba(31,111,235,0.15)' : 'var(--dsa-bg-tertiary)',
                       color: activeCase === idx ? 'var(--primary)' : 'var(--text-muted)',
                     }}
                   >
@@ -558,7 +660,7 @@ const CompilerPanel = ({ question }) => {
               placeholder="Enter custom input (stdin)..."
               style={{
                 width: '100%', minHeight: '110px', resize: 'vertical',
-                background: '#0d1117', color: '#e6edf3', border: '1px solid #30363d',
+                background: 'var(--dsa-bg-primary)', color: 'var(--dsa-text)', border: '1px solid var(--dsa-border)',
                 borderRadius: '8px', padding: '0.8rem', fontFamily: 'monospace', fontSize: '0.85rem',
                 boxSizing: 'border-box',
               }}
@@ -571,12 +673,12 @@ const CompilerPanel = ({ question }) => {
           <div>
             {/* Idle state */}
             {!globalStatus && !running && (
-              <p style={{ color: '#8b949e', margin: 0 }}>Press ▶ Run Code to see results…</p>
+              <p style={{ color: 'var(--dsa-text-muted)', margin: 0 }}>Press ▶ Run Code to see results…</p>
             )}
 
             {/* Loading */}
             {running && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#8b949e' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--dsa-text-muted)' }}>
                 <span style={{ fontSize: '1.2rem', animation: 'spin 1s linear infinite', display: 'inline-block' }}>⏳</span>
                 <span>Compiling and running your code…</span>
               </div>
@@ -605,12 +707,12 @@ const CompilerPanel = ({ question }) => {
                         {activeMeta.icon} {activeMeta.label}
                       </h3>
                       {(runTime || runMemory) && (
-                        <div style={{ marginTop: '0.35rem', fontSize: '0.8rem', color: '#8b949e' }}>
+                        <div style={{ marginTop: '0.35rem', fontSize: '0.8rem', color: 'var(--dsa-text-muted)' }}>
                           {runTime && `Runtime: ${runTime}s`}{runTime && runMemory && '  ·  '}{runMemory && `Memory: ${runMemory} MB`}
                         </div>
                       )}
                     </div>
-                    <div style={{ fontSize: '0.82rem', color: '#8b949e' }}>
+                    <div style={{ fontSize: '0.82rem', color: 'var(--dsa-text-muted)' }}>
                       {caseResults.filter(r => r.ranClean).length} / {caseResults.length} cases ran successfully
                     </div>
                   </div>
@@ -628,10 +730,10 @@ const CompilerPanel = ({ question }) => {
                           key={idx}
                           onClick={() => setActiveCase(idx)}
                           style={{
-                            padding: '0.35rem 0.9rem', borderRadius: '8px', border: `1px solid ${isActive ? m.border : '#30363d'}`,
+                            padding: '0.35rem 0.9rem', borderRadius: '8px', border: `1px solid ${isActive ? m.border : 'var(--dsa-border)'}`,
                             cursor: 'pointer', fontWeight: 600, fontSize: '0.82rem', transition: 'all 0.2s',
-                            background: isActive ? m.bg : '#1e2329',
-                            color: isActive ? m.color : '#8b949e',
+                            background: isActive ? m.bg : 'var(--dsa-bg-tertiary)',
+                            color: isActive ? m.color : 'var(--dsa-text-muted)',
                           }}
                         >
                           {m.icon} Case {idx + 1}
@@ -665,14 +767,14 @@ const CompilerPanel = ({ question }) => {
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
                         <StatusBadge kind={caseBadgeKind} />
                         {d?.time && (
-                          <span style={{ fontSize: '0.78rem', color: '#8b949e' }}>{parseFloat(d.time) * 1000 | 0} ms</span>
+                          <span style={{ fontSize: '0.78rem', color: 'var(--dsa-text-muted)' }}>{parseFloat(d.time) * 1000 | 0} ms</span>
                         )}
                       </div>
 
                       {/* Compile Error */}
                       {isCompileError && (
                         <div>
-                          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.4rem' }}>Compilation Error</div>
+                          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--dsa-text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.4rem' }}>Compilation Error</div>
                           <pre style={{
                             margin: 0, padding: '0.75rem 1rem', borderRadius: '8px',
                             background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)',
@@ -694,7 +796,7 @@ const CompilerPanel = ({ question }) => {
                       {/* Runtime error stderr */}
                       {kind === 'runtime_error' && d?.stderr && (
                         <div>
-                          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.4rem' }}>Runtime Error</div>
+                          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--dsa-text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.4rem' }}>Runtime Error</div>
                           <pre style={{
                             margin: 0, padding: '0.75rem 1rem', borderRadius: '8px',
                             background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)',
@@ -714,34 +816,34 @@ const CompilerPanel = ({ question }) => {
                           }}>
                             {displayResult.stdin && (
                               <div style={{ flex: 1, minWidth: '120px' }}>
-                                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.35rem' }}>Input</div>
+                                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--dsa-text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.35rem' }}>Input</div>
                                 <pre style={{
                                   margin: 0, padding: '0.65rem 0.9rem', borderRadius: '8px',
-                                  background: '#0d1117', border: '1px solid #30363d',
-                                  color: '#e6edf3', fontFamily: 'monospace', fontSize: '0.85rem',
+                                  background: 'var(--dsa-bg-primary)', border: '1px solid var(--dsa-border)',
+                                  color: 'var(--dsa-text)', fontFamily: 'monospace', fontSize: '0.85rem',
                                   lineHeight: 1.5, overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
                                 }}>{displayResult.stdin || '(empty)'}</pre>
                               </div>
                             )}
                             <div style={{ flex: 1, minWidth: '120px' }}>
-                              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.35rem' }}>Your Output</div>
+                              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--dsa-text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.35rem' }}>Your Output</div>
                               <pre style={{
                                 margin: 0, padding: '0.65rem 0.9rem', borderRadius: '8px',
-                                background: '#0d1117', border: '1px solid #30363d',
-                                color: '#e6edf3', fontFamily: 'monospace', fontSize: '0.85rem',
+                                background: 'var(--dsa-bg-primary)', border: '1px solid var(--dsa-border)',
+                                color: 'var(--dsa-text)', fontFamily: 'monospace', fontSize: '0.85rem',
                                 lineHeight: 1.5, overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
                               }}>{d?.stdout?.trim() || '(no output)'}</pre>
                             </div>
                             {displayResult.expectedOutput && (
                               <div style={{ flex: 1, minWidth: '120px' }}>
-                                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: softMatch ? '#2ea043' : '#8b949e', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.35rem' }}>
+                                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: softMatch ? '#2ea043' : 'var(--dsa-text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.35rem' }}>
                                   {softMatch ? '✓ Expected Output' : 'Expected Output'}
                                 </div>
                                 <pre style={{
                                   margin: 0, padding: '0.65rem 0.9rem', borderRadius: '8px',
-                                  background: softMatch ? 'rgba(46,160,67,0.07)' : '#0d1117',
-                                  border: `1px solid ${softMatch ? 'rgba(46,160,67,0.25)' : '#30363d'}`,
-                                  color: softMatch ? '#2ea043' : '#e6edf3',
+                                  background: softMatch ? 'rgba(46,160,67,0.07)' : 'var(--dsa-bg-primary)',
+                                  border: `1px solid ${softMatch ? 'rgba(46,160,67,0.25)' : 'var(--dsa-border)'}`,
+                                  color: softMatch ? '#2ea043' : 'var(--dsa-text)',
                                   fontFamily: 'monospace', fontSize: '0.85rem',
                                   lineHeight: 1.5, overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
                                 }}>{displayResult.expectedOutput}</pre>
@@ -899,7 +1001,7 @@ const ProblemPanel = ({ question, solved, bookmarked, notes, onSolve, onBookmark
         <button className="dsa2-save-btn" onClick={handleSaveNote}>💾 Save</button>
       </div>
       {/* ── External links (Moved here from Compiler) ────────────────── */}
-      <div className="dsa2-ext-links" style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid #30363d' }}>
+      <div className="dsa2-ext-links" style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid var(--dsa-border)' }}>
         {question.link && question.link !== '#' && (
           <a href={question.link} target="_blank" rel="noreferrer" className="dsa2-ext-btn lc">🔗 LeetCode</a>
         )}
@@ -916,6 +1018,20 @@ const DSACheatSheet = ({ embedded }) => {
   const [solved,     setSolved]     = useState(() => load('dsa_solved', {}));
   const [bookmarked, setBookmarked] = useState(() => load('dsa_bookmarked', {}));
   const [notes,      setNotes]      = useState(() => load('dsa_notes', {}));
+  const [userProfile, setUserProfile] = useState(null);
+  const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
+  const [isLightMode, setIsLightMode]   = useState(false);
+
+  useEffect(() => {
+    getProfile().then(res => setUserProfile(res.data)).catch(() => {});
+  }, []);
+
+  const hasAccess = (index) => {
+    if (index <= 1) return true; // First two topics are free
+    if (!userProfile) return false;
+    if (userProfile.role === 'admin') return true;
+    return userProfile.isPremium;
+  };
 
   useEffect(() => save('dsa_solved', solved),     [solved]);
   useEffect(() => save('dsa_bookmarked', bookmarked), [bookmarked]);
@@ -1031,17 +1147,24 @@ const DSACheatSheet = ({ embedded }) => {
           )}
 
           <div className="dsa2-sidebar-section">TOPICS</div>
-          {topicStats.map(ts => {
+          {topicStats.map((ts, index) => {
             const isActive = !showBm && !search && activeTopic === ts.name;
             const p = Math.round((ts.done / ts.total) * 100);
+            const locked = !hasAccess(index);
             return (
               <button
                 key={ts.name}
-                className={`dsa2-topic-btn ${isActive ? 'active' : ''}`}
-                style={isActive ? { borderLeftColor: ts.color, color: ts.color } : {}}
-                onClick={() => { setActiveTopic(ts.name); setShowBm(false); setSearch(''); setSelectedQ(null); }}
+                className={`dsa2-topic-btn ${isActive ? 'active' : ''} ${locked ? 'locked' : ''}`}
+                style={isActive ? { borderLeftColor: ts.color, color: ts.color } : { opacity: locked ? 0.6 : 1 }}
+                onClick={() => { 
+                  if (locked) {
+                    setIsPremiumModalOpen(true);
+                    return;
+                  }
+                  setActiveTopic(ts.name); setShowBm(false); setSearch(''); setSelectedQ(null); 
+                }}
               >
-                <span className="dsa2-topic-ic">{ts.icon}</span>
+                <span className="dsa2-topic-ic">{locked ? <Lock size={16}/> : ts.icon}</span>
                 <span className="dsa2-topic-nm" style={isActive ? { color: ts.color, fontWeight: 700 } : {}}>{ts.name}</span>
                 <div className="dsa2-topic-right">
                   <span className="dsa2-topic-cnt">{ts.done}/{ts.total}</span>
@@ -1061,39 +1184,73 @@ const DSACheatSheet = ({ embedded }) => {
         <main className="dsa2-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
           {/* ── Split view rendered as full-screen overlay via Portal ──── */}
           {selectedQ && createPortal(
-            <div style={{
-              position: 'fixed', inset: 0, zIndex: 9999,
-              display: 'flex', flexDirection: 'column',
-              background: '#0d1117', overflow: 'hidden',
-              fontFamily: 'Inter, sans-serif',
-            }}>
+            <>
+              <style>{`
+  .dsa-theme-dark {
+    --dsa-bg-primary: #0d1117;
+    --dsa-bg-secondary: #161b22;
+    --dsa-bg-tertiary: #1e2329;
+    --dsa-border: #30363d;
+    --dsa-text: #e6edf3;
+    --dsa-text-muted: #8b949e;
+  }
+  .dsa-theme-light {
+    --dsa-bg-primary: #ffffff;
+    --dsa-bg-secondary: #f8fafc;
+    --dsa-bg-tertiary: #f1f5f9;
+    --dsa-border: #e2e8f0;
+    --dsa-text: #0f172a;
+    --dsa-text-muted: #64748b;
+  }
+              `}</style>
+              <div className={isLightMode ? 'dsa-theme-light' : 'dsa-theme-dark'} style={{
+                position: 'fixed', inset: 0, zIndex: 9999,
+                display: 'flex', flexDirection: 'column',
+                background: 'var(--dsa-bg-primary)', overflow: 'hidden',
+                fontFamily: 'Inter, sans-serif',
+              }}>
               {/* ── Topbar ── */}
               <div style={{
                 display: 'flex', alignItems: 'center', gap: '1rem',
                 padding: '0 1.25rem', height: '48px', flexShrink: 0,
-                background: '#161b22', borderBottom: '1px solid #30363d',
+                background: 'var(--dsa-bg-secondary)', borderBottom: '1px solid var(--dsa-border)',
               }}>
                 <button
                   onClick={() => setSelectedQ(null)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: '0.4rem',
-                    background: 'none', border: '1px solid #30363d', color: '#8b949e',
+                    background: 'none', border: '1px solid var(--dsa-border)', color: 'var(--dsa-text-muted)',
                     padding: '0.3rem 0.8rem', borderRadius: '6px', cursor: 'pointer',
                     fontSize: '0.8rem', fontWeight: 600, transition: 'all 0.15s',
                   }}
-                  onMouseEnter={e => { e.target.style.color='#e6edf3'; e.target.style.borderColor='#8b949e'; }}
-                  onMouseLeave={e => { e.target.style.color='#8b949e'; e.target.style.borderColor='#30363d'; }}
+                  onMouseEnter={e => { e.target.style.color='var(--dsa-text)'; e.target.style.borderColor='var(--dsa-text-muted)'; }}
+                  onMouseLeave={e => { e.target.style.color='var(--dsa-text-muted)'; e.target.style.borderColor='var(--dsa-border)'; }}
                 >
                   ← Back
                 </button>
-                <span style={{ color: '#8b949e', fontSize: '0.8rem' }}>
+                <span style={{ color: 'var(--dsa-text-muted)', fontSize: '0.8rem' }}>
                   {selectedQ.topic}
                 </span>
-                <span style={{ color: '#30363d' }}>/</span>
-                <span style={{ color: '#e6edf3', fontSize: '0.82rem', fontWeight: 600 }}>
+                <span style={{ color: 'var(--dsa-border)' }}>/</span>
+                <span style={{ color: 'var(--dsa-text)', fontSize: '0.82rem', fontWeight: 600 }}>
                   {selectedQ.no}. {selectedQ.title}
                 </span>
                 <DiffBadge d={selectedQ.difficulty} />
+                <button
+                  onClick={() => setIsLightMode(!isLightMode)}
+                  style={{
+                    marginLeft: 'auto',
+                    display: 'flex', alignItems: 'center', gap: '0.4rem',
+                    background: 'none', border: '1px solid var(--dsa-border)', color: 'var(--dsa-text-muted)',
+                    padding: '0.3rem 0.8rem', borderRadius: '6px', cursor: 'pointer',
+                    fontSize: '0.8rem', fontWeight: 600, transition: 'all 0.15s',
+                  }}
+                  onMouseEnter={e => { e.target.style.color='var(--dsa-text)'; e.target.style.borderColor='var(--dsa-text-muted)'; }}
+                  onMouseLeave={e => { e.target.style.color='var(--dsa-text-muted)'; e.target.style.borderColor='var(--dsa-border)'; }}
+                >
+                  {isLightMode ? '🌙 Dark Mode' : '☀️ Light Mode'}
+                </button>
+
               </div>
 
               {/* ── Two-panel split ── */}
@@ -1103,8 +1260,8 @@ const DSACheatSheet = ({ embedded }) => {
               }}>
                 {/* Left: Problem — scrolls independently */}
                 <div style={{
-                  overflowY: 'auto', borderRight: '1px solid #30363d',
-                  background: '#0d1117',
+                  overflowY: 'auto', borderRight: '1px solid var(--dsa-border)',
+                  background: 'var(--dsa-bg-primary)',
                 }}>
                   <ProblemPanel
                     question={selectedQ}
@@ -1118,13 +1275,14 @@ const DSACheatSheet = ({ embedded }) => {
                 </div>
                 {/* Right: Compiler — internally resizable */}
                 <div style={{
-                  overflow: 'hidden', background: '#0d1117',
+                  overflow: 'hidden', background: 'var(--dsa-bg-primary)',
                   display: 'flex', flexDirection: 'column',
                 }}>
                   <CompilerPanel question={selectedQ} />
                 </div>
               </div>
-            </div>,
+            </div>
+            </>,
             document.body
           )}
 
@@ -1200,11 +1358,20 @@ const DSACheatSheet = ({ embedded }) => {
                         const isSolved = !!solved[q.id];
                         const isBm     = !!bookmarked[q.id];
                         const hasNote  = !!(notes[q.id]?.trim());
+                        const topicIndex = Object.keys(DSA_TOPICS).indexOf(q.topic);
+                        const isLocked = !hasAccess(topicIndex);
                         return (
                           <tr
                             key={q.id}
-                            className={`dsa2-tr ${isSolved ? 'solved' : ''}`}
-                            onClick={() => setSelectedQ(q)}
+                            className={`dsa2-tr ${isSolved ? 'solved' : ''} ${isLocked ? 'locked-row' : ''}`}
+                            style={{ opacity: isLocked ? 0.7 : 1, cursor: isLocked ? 'not-allowed' : 'pointer' }}
+                            onClick={() => {
+                              if (isLocked) {
+                                setIsPremiumModalOpen(true);
+                                return;
+                              }
+                              setSelectedQ(q);
+                            }}
                           >
                             <td className="dsa2-num">{q.no}</td>
                             <td>
@@ -1251,6 +1418,15 @@ const DSACheatSheet = ({ embedded }) => {
           </div>{/* end content area */}
         </main>
       </div>
+      <PremiumModal 
+        isOpen={isPremiumModalOpen} 
+        onClose={() => setIsPremiumModalOpen(false)} 
+        onSuccess={() => {
+          setIsPremiumModalOpen(false);
+          getProfile().then(res => setUserProfile(res.data)); // Refresh profile
+          toast.success('Welcome to Premium! All topics are now unlocked.');
+        }} 
+      />
     </div>
   );
 };

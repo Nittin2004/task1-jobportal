@@ -172,7 +172,7 @@ const Navbar = () => {
               style={{ marginLeft: 'auto' }}
             >
               <button className="nav-dropdown-trigger" onClick={(e) => { e.preventDefault(); setProfileOpen(!profileOpen); }}>
-                👤 {user.name} <span className="chevron-down">{profileOpen ? '▲' : '▼'}</span>
+                👤 {user.name} {user.isPremium && <span style={{ background: 'linear-gradient(to right, #6366f1, #a855f7)', color: 'white', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold', marginLeft: '4px' }}>PRO</span>} <span className="chevron-down">{profileOpen ? '▲' : '▼'}</span>
               </button>
               <div className={`nav-dropdown-menu ${profileOpen ? 'mobile-show' : ''}`}>
                 <Link to={getDashboardLink()} className="nav-dropdown-item" onClick={closeAll}>

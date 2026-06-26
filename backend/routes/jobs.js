@@ -7,7 +7,7 @@ const router = express.Router();
 // Get all active jobs (public)
 router.get('/', async (req, res) => {
   try {
-    const { search, location, jobType, category } = req.query;
+    const { search, location, jobType, category, page, limit } = req.query;
     const filter = { isActive: true };
 
     if (search) filter.title = { $regex: search, $options: 'i' };
@@ -15,7 +15,21 @@ router.get('/', async (req, res) => {
     if (jobType) filter.jobType = jobType;
     if (category) filter.category = { $regex: category, $options: 'i' };
 
-    const jobs = await Job.find(filter).populate('company', 'name location industry').sort({ createdAt: -1 });
+    const pageNum = Math.max(1, parseInt(page) || 1);
+    const limitNum = Math.min(100, parseInt(limit) || 50);
+    const skipNum = (pageNum - 1) * limitNum;
+
+    const jobs = await Job.find(filter)
+      .populate('company', 'name location industry')
+      .sort({ createdAt: -1 })
+      .skip(skipNum)
+      .limit(limitNum);
+
+    if (page !== undefined) {
+      const total = await Job.countDocuments(filter);
+      return res.json({ data: jobs, total, page: pageNum, pages: Math.ceil(total / limitNum) });
+    }
+
     res.json(jobs);
   } catch (err) {
     res.status(500).json({ message: err.message });

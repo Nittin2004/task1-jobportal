@@ -22,10 +22,22 @@ router.get('/stats', adminMiddleware, async (req, res) => {
   }
 });
 
+// Helper for admin pagination
+const getPagination = (query) => {
+  const page = Math.max(1, parseInt(query.page) || 1);
+  const limit = Math.min(100, parseInt(query.limit) || 50);
+  return { page, limit, skip: (page - 1) * limit, isPaginated: query.page !== undefined };
+};
+
 // Get all candidates
 router.get('/candidates', adminMiddleware, async (req, res) => {
   try {
-    const candidates = await User.find().select('-password').sort({ createdAt: -1 });
+    const { page, limit, skip, isPaginated } = getPagination(req.query);
+    const candidates = await User.find().select('-password').sort({ createdAt: -1 }).skip(skip).limit(limit);
+    if (isPaginated) {
+      const total = await User.countDocuments();
+      return res.json({ data: candidates, total, page, pages: Math.ceil(total / limit) });
+    }
     res.json(candidates);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -35,7 +47,12 @@ router.get('/candidates', adminMiddleware, async (req, res) => {
 // Get all companies
 router.get('/companies', adminMiddleware, async (req, res) => {
   try {
-    const companies = await Company.find().select('-password').sort({ createdAt: -1 });
+    const { page, limit, skip, isPaginated } = getPagination(req.query);
+    const companies = await Company.find().select('-password').sort({ createdAt: -1 }).skip(skip).limit(limit);
+    if (isPaginated) {
+      const total = await Company.countDocuments();
+      return res.json({ data: companies, total, page, pages: Math.ceil(total / limit) });
+    }
     res.json(companies);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -45,7 +62,12 @@ router.get('/companies', adminMiddleware, async (req, res) => {
 // Get all jobs
 router.get('/jobs', adminMiddleware, async (req, res) => {
   try {
-    const jobs = await Job.find().populate('company', 'name').sort({ createdAt: -1 });
+    const { page, limit, skip, isPaginated } = getPagination(req.query);
+    const jobs = await Job.find().populate('company', 'name').sort({ createdAt: -1 }).skip(skip).limit(limit);
+    if (isPaginated) {
+      const total = await Job.countDocuments();
+      return res.json({ data: jobs, total, page, pages: Math.ceil(total / limit) });
+    }
     res.json(jobs);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -55,10 +77,17 @@ router.get('/jobs', adminMiddleware, async (req, res) => {
 // Get all applications
 router.get('/applications', adminMiddleware, async (req, res) => {
   try {
+    const { page, limit, skip, isPaginated } = getPagination(req.query);
     const apps = await Application.find()
       .populate('candidate', 'name email')
       .populate({ path: 'job', select: 'title', populate: { path: 'company', select: 'name' } })
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    if (isPaginated) {
+      const total = await Application.countDocuments();
+      return res.json({ data: apps, total, page, pages: Math.ceil(total / limit) });
+    }
     res.json(apps);
   } catch (err) {
     res.status(500).json({ message: err.message });

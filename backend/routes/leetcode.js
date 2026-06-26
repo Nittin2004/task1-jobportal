@@ -98,6 +98,10 @@ router.get('/:slug', async (req, res) => {
               content
               metaData
               exampleTestcases
+              codeSnippets {
+                langSlug
+                code
+              }
             }
           }
         `,
@@ -118,6 +122,7 @@ router.get('/:slug', async (req, res) => {
       content:          q.content,
       metaData:         q.metaData,
       exampleTestcases: q.exampleTestcases,
+      codeSnippets:     q.codeSnippets,
       examples,          // ← rich parsed array: [{ stdin, rawStdin, expectedOutput }]
     });
   } catch (error) {

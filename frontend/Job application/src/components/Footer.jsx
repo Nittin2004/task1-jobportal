@@ -39,8 +39,8 @@ const Footer = () => {
             <h4>Contact</h4>
             <ul>
               <li>📧 support@nexthire.com</li>
-              <li>📞 +91 98765 43210</li>
-              <li>📍 Mumbai, India</li>
+              <li>📞 +91 9797925921</li>
+              <li>📍 jammu, India</li>
             </ul>
           </div>
 

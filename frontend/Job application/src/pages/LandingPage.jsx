@@ -50,6 +50,7 @@ const LandingPage = () => {
   const [searchLocation, setSearchLocation] = useState('');
   const [statsStarted, setStatsStarted] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const [openFaq, setOpenFaq] = useState(0);
 
   const jobs = useCountUp(50000, 1800, statsStarted);
   const candidates = useCountUp(1200000, 1800, statsStarted);
@@ -158,6 +159,29 @@ const LandingPage = () => {
   ];
 
   const trustedBy = ['Google', 'Microsoft', 'Amazon', 'Flipkart', 'Razorpay', 'Zepto', 'Swiggy', 'Meesho'];
+
+  const faqs = [
+    {
+      question: "Is NextHire completely free for job seekers?",
+      answer: "Yes! Creating a candidate profile, practicing DSA problems, scanning your resume with our AI ATS scanner, and applying to unlimited jobs is 100% free forever."
+    },
+    {
+      question: "How does the AI ATS Resume Scanner work?",
+      answer: "Our scanner evaluates your resume against industry-standard ATS algorithms. It provides an instant score out of 100, identifies missing critical keywords, and highlights formatting gaps so you can optimize your resume before submitting."
+    },
+    {
+      question: "Can companies post jobs and scout talent directly?",
+      answer: "Absolutely. Verified companies can register, post job openings, manage applications through a dedicated company dashboard, and filter candidates based on verified preparation scores."
+    },
+    {
+      question: "How accurate are the DSA preparation tracks?",
+      answer: "Our question banks are curated from real interview rounds of top tech companies (MAANG, startups, and unicorns). Questions are categorized by topic and difficulty, equipped with detailed solutions and visual cheat sheets."
+    },
+    {
+      question: "How do mentorship sessions work?",
+      answer: "You can browse verified industry mentors from leading tech giants, check their availability, and book 1-on-1 mock interviews, resume reviews, or career guidance sessions directly through the platform."
+    }
+  ];
 
   const activeFeature = platformFeatures[activeTab];
 
@@ -592,6 +616,121 @@ const LandingPage = () => {
                     <div className="lp-t-role">{t.role}</div>
                   </div>
                 </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+
+        {/* ═══════════ MEET THE FOUNDER V4 (Neon Flashy) ═══════════ */}
+        <motion.section
+          className="lp-section lp-neon-founder"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          <div className="lp-nf-container">
+            <motion.div className="lp-nf-card" variants={fadeUp} whileHover={{ y: -5 }}>
+              <div className="lp-nf-glow-bg"></div>
+              <div className="lp-nf-content">
+                
+                <div className="lp-nf-left">
+                  <div className="lp-nf-img-box">
+                    <img src="/nittin.jpeg" alt="Nittin Sharma" className="lp-nf-img" onError={(e) => { e.target.onerror = null; e.target.src = "https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=400&q=80"; }} />
+                    <div className="lp-nf-floating-badge">👑 FOUNDER</div>
+                  </div>
+                </div>
+
+                <div className="lp-nf-right">
+                  <div className="lp-nf-greeting">👋 Hello World, I'm</div>
+                  <h2 className="lp-nf-name">Nittin Sharma</h2>
+                  <h3 className="lp-nf-role">Software Engineer & Founder</h3>
+                  
+                  <div className="lp-nf-details-grid">
+                    <div className="lp-nf-detail-item">
+                      <span className="lp-nf-icon">🎓</span>
+                      <div className="lp-nf-detail-text">
+                        <span className="lp-nf-label">Education</span>
+                        <span className="lp-nf-value">B.Tech / Computer Science</span>
+                      </div>
+                    </div>
+                    <div className="lp-nf-detail-item">
+                      <span className="lp-nf-icon">💼</span>
+                      <div className="lp-nf-detail-text">
+                        <span className="lp-nf-label">Profession</span>
+                        <span className="lp-nf-value">Full Stack Developer</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="lp-nf-bio">
+                    Welcome to my brainchild, <strong>NextHire</strong>. I designed this platform to bridge the gap between learning DSA and cracking the interview. No more switching tabs—everything you need is right here.
+                  </p>
+
+                  <div className="lp-nf-skills-wrap">
+                    <span className="lp-nf-skills-title">Technical Skills:</span>
+                    <div className="lp-nf-tech-stack" style={{marginBottom: 0}}>
+                      <span>⚡ MERN Stack</span>
+                      <span>🎨 UI/UX</span>
+                      <span>💻 Competitive Coding</span>
+                      <span>🚀 Next.js</span>
+                    </div>
+                  </div>
+
+                  <div className="lp-nf-buttons">
+                    <a href="https://linkedin.com/in/" target="_blank" rel="noreferrer" className="lp-nf-btn primary">
+                      Connect on LinkedIn 🚀
+                    </a>
+                    <a href="https://github.com/Nittin2004" target="_blank" rel="noreferrer" className="lp-nf-btn secondary">
+                      View GitHub
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.section>
+
+        {/* ═══════════ FREQUENTLY ASKED QUESTIONS ═══════════ */}
+        <motion.section
+          className="lp-section"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={staggerContainer}
+        >
+          <motion.div variants={fadeUp} className="lp-section-header">
+            <div className="lp-section-kicker">❓ Got Questions?</div>
+            <h2 className="lp-section-title">Frequently Asked Questions</h2>
+            <p className="lp-section-sub">Everything you need to know about NextHire</p>
+          </motion.div>
+          <div className="lp-faq-list">
+            {faqs.map((faq, i) => (
+              <motion.div
+                key={i}
+                variants={fadeUp}
+                className={`lp-faq-card ${openFaq === i ? 'open' : ''}`}
+              >
+                <button
+                  type="button"
+                  className="lp-faq-question"
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                >
+                  <span>{faq.question}</span>
+                  <span className="lp-faq-icon">↓</span>
+                </button>
+                <AnimatePresence>
+                  {openFaq === i && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3, ease: 'easeInOut' }}
+                      className="lp-faq-answer-wrap"
+                    >
+                      <p className="lp-faq-answer">{faq.answer}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             ))}
           </div>

@@ -70,7 +70,7 @@ const Login = () => {
         )}
         {role === 'admin' && (
           <div className="auth-footer" style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Admin: admin@nexthire.com / Admin@123
+            
           </div>
         )}
       </div>

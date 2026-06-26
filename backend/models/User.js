@@ -10,6 +10,9 @@ const userSchema = new mongoose.Schema({
   education: { type: String, default: '' },
   resumeUrl: { type: String, default: '' },
   role: { type: String, default: 'candidate' },
+  // Premium Features
+  isPremium: { type: Boolean, default: false },
+  premiumActivatedAt: { type: Date },
   // Academy Fields
   currentTrack: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', default: null },
   xpPoints: { type: Number, default: 0 },
@@ -18,5 +21,7 @@ const userSchema = new mongoose.Schema({
   mentorBio: { type: String, default: '' },
   hourlyRate: { type: Number, default: 0 },
 }, { timestamps: true });
+
+userSchema.index({ email: 1 });
 
 module.exports = mongoose.model('User', userSchema);

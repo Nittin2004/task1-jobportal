@@ -54,9 +54,21 @@ router.post('/', authMiddleware, async (req, res) => {
 router.get('/my-applications', authMiddleware, async (req, res) => {
   try {
     if (req.user.role !== 'candidate') return res.status(403).json({ message: 'Not authorized' });
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, parseInt(req.query.limit) || 50);
+    const skip = (page - 1) * limit;
+
     const apps = await Application.find({ candidate: req.user.id })
       .populate({ path: 'job', populate: { path: 'company', select: 'name location' } })
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    if (req.query.page !== undefined) {
+      const total = await Application.countDocuments({ candidate: req.user.id });
+      return res.json({ data: apps, total, page, pages: Math.ceil(total / limit) });
+    }
+
     res.json(apps);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -67,9 +79,21 @@ router.get('/my-applications', authMiddleware, async (req, res) => {
 router.get('/job/:jobId', authMiddleware, async (req, res) => {
   try {
     if (req.user.role !== 'company') return res.status(403).json({ message: 'Not authorized' });
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, parseInt(req.query.limit) || 50);
+    const skip = (page - 1) * limit;
+
     const apps = await Application.find({ job: req.params.jobId })
       .populate('candidate', 'name email phone skills experience education resumeUrl')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    if (req.query.page !== undefined) {
+      const total = await Application.countDocuments({ job: req.params.jobId });
+      return res.json({ data: apps, total, page, pages: Math.ceil(total / limit) });
+    }
+
     res.json(apps);
   } catch (err) {
     res.status(500).json({ message: err.message });
