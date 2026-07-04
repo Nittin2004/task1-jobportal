@@ -78,6 +78,181 @@ const ARRAYS = [
   q(18,'Arrays','Merge Intervals','Medium','Sorting','merge-intervals',['Google','Facebook','Twitter']),
   q(19,'Arrays','Insert Interval','Medium','Binary Search','insert-interval',['Google','LinkedIn','Facebook']),
   q(20,'Arrays','Meeting Rooms','Easy','Sorting','meeting-rooms',['Facebook','Google','Snapchat']),
+  q(21,'Arrays','Best Time to Buy and Sell Stock','Easy','Sliding Window','best-time-to-buy-and-sell-stock',['Amazon','Facebook','Bloomberg'],
+`<p>You are given an array <code>prices</code> where <code>prices[i]</code> is the price of a given stock on the <code>i<sup>th</sup></code> day.</p>
+<p>You want to maximize your profit by choosing a <strong>single day</strong> to buy one stock and choosing a <strong>different day in the future</strong> to sell that stock.</p>
+<p>Return <em>the maximum profit you can achieve from this transaction</em>. If you cannot achieve any profit, return <code>0</code>.</p>
+
+<p><strong>Example 1:</strong></p>
+<pre><strong>Input:</strong> prices = [7,1,5,3,6,4]
+<strong>Output:</strong> 5
+<strong>Explanation:</strong> Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5.</pre>
+
+<p><strong>Example 2:</strong></p>
+<pre><strong>Input:</strong> prices = [7,6,4,3,1]
+<strong>Output:</strong> 0
+<strong>Explanation:</strong> No transactions are done and the max profit = 0.</pre>
+
+<p><strong>Constraints:</strong></p>
+<ul>
+  <li><code>1 &lt;= prices.length &lt;= 10<sup>5</sup></code></li>
+  <li><code>0 &lt;= prices[i] &lt;= 10<sup>4</sup></code></li>
+</ul>`),
+  q(22,'Arrays','Subarray Sum Equals K','Medium','Prefix Sum + Hashing','subarray-sum-equals-k',['Amazon','Facebook','Google'],
+`<p>Given an array of integers <code>nums</code> and an integer <code>k</code>, return <em>the total number of subarrays whose sum equals to</em> <code>k</code>.</p>
+<p>A subarray is a contiguous <strong>non-empty</strong> sequence of elements within an array.</p>
+
+<p><strong>Example 1:</strong></p>
+<pre><strong>Input:</strong> nums = [1,1,1], k = 2
+<strong>Output:</strong> 2</pre>
+
+<p><strong>Example 2:</strong></p>
+<pre><strong>Input:</strong> nums = [1,2,3], k = 3
+<strong>Output:</strong> 2</pre>
+
+<p><strong>Constraints:</strong></p>
+<ul>
+  <li><code>1 &lt;= nums.length &lt;= 2 * 10<sup>4</sup></code></li>
+  <li><code>-1000 &lt;= nums[i] &lt;= 1000</code></li>
+  <li><code>-10<sup>7</sup> &lt;= k &lt;= 10<sup>7</sup></code></li>
+</ul>`),
+  q(23,'Arrays','Maximum Sum Circular Subarray','Medium',"Kadane's Algorithm",'maximum-sum-circular-subarray',['Amazon','Google','Microsoft'],
+`<p>Given a <strong>circular integer array</strong> <code>nums</code> of length <code>n</code>, return <em>the maximum possible sum of a non-empty subarray of</em> <code>nums</code>.</p>
+<p>A circular array means the end of the array connects to the beginning of the array.</p>
+
+<p><strong>Example 1:</strong></p>
+<pre><strong>Input:</strong> nums = [1,-2,3,-2]
+<strong>Output:</strong> 3</pre>
+
+<p><strong>Example 2:</strong></p>
+<pre><strong>Input:</strong> nums = [5,-3,5]
+<strong>Output:</strong> 10</pre>
+
+<p><strong>Constraints:</strong></p>
+<ul>
+  <li><code>n == nums.length</code></li>
+  <li><code>1 &lt;= n &lt;= 3 * 10<sup>4</sup></code></li>
+  <li><code>-3 * 10<sup>4</sup> &lt;= nums[i] &lt;= 3 * 10<sup>4</sup></code></li>
+</ul>`),
+  q(24,'Arrays','Find All Duplicates in an Array','Medium','Index Marking','find-all-duplicates-in-an-array',['Amazon','Adobe','Bloomberg'],
+`<p>Given an integer array <code>nums</code> of length <code>n</code> where all the integers of <code>nums</code> are in the range <code>[1, n]</code> and each integer appears <strong>once</strong> or <strong>twice</strong>, return <em>an array of all the integers that appears <strong>twice</strong></em>.</p>
+
+<p><strong>Example 1:</strong></p>
+<pre><strong>Input:</strong> nums = [4,3,2,7,8,2,3,1]
+<strong>Output:</strong> [2,3]</pre>
+
+<p><strong>Example 2:</strong></p>
+<pre><strong>Input:</strong> nums = [1,1,2]
+<strong>Output:</strong> [1]</pre>
+
+<p><strong>Constraints:</strong></p>
+<ul>
+  <li><code>n == nums.length</code></li>
+  <li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>
+  <li><code>1 &lt;= nums[i] &lt;= n</code></li>
+</ul>`),
+  q(25,'Arrays','Range Sum Query - Immutable','Easy','Prefix Sum','range-sum-query-immutable',['Amazon','Google','Microsoft'],
+`<p>Given an integer array <code>nums</code>, handle multiple queries of the following type:</p>
+<p>Calculate the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> where <code>left &lt;= right</code>.</p>
+<p>Implement the <code>NumArray</code> class with <code>sumRange(left, right)</code> that returns the sum in O(1).</p>
+
+<p><strong>Example 1:</strong></p>
+<pre><strong>Input:</strong> ["NumArray","sumRange","sumRange","sumRange"]
+[[[-2,0,3,-5,2,-1]],[0,2],[2,5],[0,5]]
+<strong>Output:</strong> [null,1,-1,-3]</pre>
+
+<p><strong>Constraints:</strong></p>
+<ul>
+  <li><code>1 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>
+  <li><code>-10<sup>5</sup> &lt;= nums[i] &lt;= 10<sup>5</sup></code></li>
+  <li><code>0 &lt;= left &lt;= right &lt; nums.length</code></li>
+</ul>`),
+  q(26,'Arrays','Pascal\'s Triangle','Easy','Array Construction','pascals-triangle',['Apple','Amazon','Microsoft'],
+`<p>Given an integer <code>numRows</code>, return the first <code>numRows</code> of <strong>Pascal\'s triangle</strong>.</p>
+<p>In Pascal\'s triangle, each number is the sum of the two numbers directly above it.</p>
+
+<p><strong>Example 1:</strong></p>
+<pre><strong>Input:</strong> numRows = 5
+<strong>Output:</strong> [[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]</pre>
+
+<p><strong>Constraints:</strong></p>
+<ul>
+  <li><code>1 &lt;= numRows &lt;= 30</code></li>
+</ul>`),
+  q(27,'Arrays','Sort Colors (Dutch National Flag)','Medium','Three Pointers','sort-colors',['Amazon','Microsoft','Facebook'],
+`<p>Given an array <code>nums</code> with <code>n</code> objects colored red, white, or blue, sort them <strong>in-place</strong> so that objects of the same color are adjacent, with the colors in the order red, white, and blue.</p>
+<p>We will use the integers <code>0</code>, <code>1</code>, and <code>2</code> to represent the color red, white, and blue, respectively.</p>
+
+<p><strong>Example 1:</strong></p>
+<pre><strong>Input:</strong> nums = [2,0,2,1,1,0]
+<strong>Output:</strong> [0,0,1,1,2,2]</pre>
+
+<p><strong>Example 2:</strong></p>
+<pre><strong>Input:</strong> nums = [2,0,1]
+<strong>Output:</strong> [0,1,2]</pre>
+
+<p><strong>Constraints:</strong></p>
+<ul>
+  <li><code>n == nums.length</code></li>
+  <li><code>1 &lt;= n &lt;= 300</code></li>
+  <li><code>nums[i]</code> is either <code>0</code>, <code>1</code>, or <code>2</code>.</li>
+</ul>`),
+  q(28,'Arrays','Find the Duplicate Number','Medium','Floyd\'s Cycle Detection','find-the-duplicate-number',['Amazon','Google','Microsoft'],
+`<p>Given an array of integers <code>nums</code> containing <code>n + 1</code> integers where each integer is in the range <code>[1, n]</code> inclusive, there is only <strong>one repeated number</strong> in <code>nums</code>. Return this repeated number.</p>
+<p>You must solve the problem <strong>without</strong> modifying the array <code>nums</code> and uses only constant extra space.</p>
+
+<p><strong>Example 1:</strong></p>
+<pre><strong>Input:</strong> nums = [1,3,4,2,2]
+<strong>Output:</strong> 2</pre>
+
+<p><strong>Example 2:</strong></p>
+<pre><strong>Input:</strong> nums = [3,1,3,4,2]
+<strong>Output:</strong> 3</pre>
+
+<p><strong>Constraints:</strong></p>
+<ul>
+  <li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>
+  <li><code>nums.length == n + 1</code></li>
+  <li><code>1 &lt;= nums[i] &lt;= n</code></li>
+</ul>`),
+  q(29,'Arrays','Count of Smaller Numbers After Self','Hard','Merge Sort / BIT','count-of-smaller-numbers-after-self',['Google','Amazon','Palantir'],
+`<p>Given an integer array <code>nums</code>, return <em>an integer array</em> <code>counts</code> where <code>counts[i]</code> is the number of smaller elements to the right of <code>nums[i]</code>.</p>
+
+<p><strong>Example 1:</strong></p>
+<pre><strong>Input:</strong> nums = [5,2,6,1]
+<strong>Output:</strong> [2,1,1,0]
+<strong>Explanation:</strong>
+To the right of 5 there are 2 smaller elements (2 and 1).
+To the right of 2 there is only 1 smaller element (1).
+To the right of 6 there is 1 smaller element (1).
+To the right of 1 there is 0 smaller element.</pre>
+
+<p><strong>Constraints:</strong></p>
+<ul>
+  <li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>
+  <li><code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>
+</ul>`),
+  q(30,'Arrays','First Missing Positive','Hard','Index Mapping','first-missing-positive',['Amazon','Microsoft','Bloomberg'],
+`<p>Given an unsorted integer array <code>nums</code>, return the <em>smallest missing positive integer</em>.</p>
+<p>You must implement an algorithm that runs in <code>O(n)</code> time and uses <code>O(1)</code> auxiliary space.</p>
+
+<p><strong>Example 1:</strong></p>
+<pre><strong>Input:</strong> nums = [1,2,0]
+<strong>Output:</strong> 3</pre>
+
+<p><strong>Example 2:</strong></p>
+<pre><strong>Input:</strong> nums = [3,4,-1,1]
+<strong>Output:</strong> 2</pre>
+
+<p><strong>Example 3:</strong></p>
+<pre><strong>Input:</strong> nums = [7,8,9,11,12]
+<strong>Output:</strong> 1</pre>
+
+<p><strong>Constraints:</strong></p>
+<ul>
+  <li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>
+  <li><code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code></li>
+</ul>`),
 ];
 
 // ── STRINGS ──────────────────────────────────────────────────────────────────
@@ -102,6 +277,16 @@ const STRINGS = [
   q(18,'Strings','Compare Version Numbers','Medium','String','compare-version-numbers',['Amazon','Uber','IXL']),
   q(19,'Strings','Valid Parentheses','Easy','Stack','valid-parentheses',['Amazon','Google','Bloomberg']),
   q(20,'Strings','Repeated Substring Pattern','Easy','KMP / String','repeated-substring-pattern',['Amazon','Google']),
+  q(21,'Strings','Palindromic Substrings','Medium','Expand Around Center','palindromic-substrings',['Facebook','Amazon','Google']),
+  q(22,'Strings','Find All Anagrams in a String','Medium','Sliding Window','find-all-anagrams-in-a-string',['Amazon','Google','Bloomberg']),
+  q(23,'Strings','Permutation in String','Medium','Sliding Window','permutation-in-string',['Amazon','Google','Microsoft']),
+  q(24,'Strings','Longest Repeating Character Replacement','Medium','Sliding Window','longest-repeating-character-replacement',['Google','Amazon','Uber']),
+  q(25,'Strings','Decode String','Medium','Stack','decode-string',['Google','Amazon','Bloomberg']),
+  q(26,'Strings','Minimum Add to Make Parentheses Valid','Medium','Stack','minimum-add-to-make-parentheses-valid',['Facebook','Google','Amazon']),
+  q(27,'Strings','Sort Characters By Frequency','Medium','Hashing / Sorting','sort-characters-by-frequency',['Amazon','Google','Microsoft']),
+  q(28,'Strings','String to Integer (atoi)','Medium','Simulation','string-to-integer-atoi',['Amazon','Microsoft','Bloomberg']),
+  q(29,'Strings','Multiply Strings','Medium','Math / String','multiply-strings',['Facebook','Microsoft','Google']),
+  q(30,'Strings','Edit Distance','Hard','Dynamic Programming','edit-distance',['Google','Amazon','Microsoft']),
 ];
 
 // ── LINKED LIST ──────────────────────────────────────────────────────────────
@@ -416,7 +601,7 @@ const DP = [
   q(20,'Dynamic Programming','Palindromic Substrings','Medium','DP / Expand Around Center','palindromic-substrings',['Facebook','Amazon','Google']),
 ];
 
-// ── GREEDY ───────────────────────────────────────────────────────────────────
+
 const GREEDY = [
   q(1,'Greedy','Jump Game','Medium','Greedy','jump-game',['Amazon','Google','Microsoft']),
   q(2,'Greedy','Jump Game II','Medium','Greedy','jump-game-ii',['Amazon','Google']),

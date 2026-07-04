@@ -78,7 +78,7 @@ const Navbar = () => {
             onMouseEnter={() => { if (window.innerWidth > 768) setAcademyOpen(true); }}
             onMouseLeave={() => { if (window.innerWidth > 768) setAcademyOpen(false); }}
           >
-            <button className="nav-dropdown-trigger" onClick={(e) => { e.preventDefault(); setAcademyOpen(!academyOpen); }}>
+            <button className="nav-dropdown-trigger" onClick={(e) => { e.preventDefault(); if (window.innerWidth <= 768) setAcademyOpen(!academyOpen); }}>
               Academy <span className="chevron-down">{academyOpen ? '▲' : '▼'}</span>
             </button>
             <div className={`nav-dropdown-menu ${academyOpen ? 'mobile-show' : ''}`}>
@@ -105,7 +105,7 @@ const Navbar = () => {
             onMouseEnter={() => { if (window.innerWidth > 768) setPrepOpen(true); }}
             onMouseLeave={() => { if (window.innerWidth > 768) setPrepOpen(false); }}
           >
-            <button className="nav-dropdown-trigger" onClick={(e) => { e.preventDefault(); setPrepOpen(!prepOpen); }}>
+            <button className="nav-dropdown-trigger" onClick={(e) => { e.preventDefault(); if (window.innerWidth <= 768) setPrepOpen(!prepOpen); }}>
               Preparation <span className="chevron-down">{prepOpen ? '▲' : '▼'}</span>
             </button>
             <div className={`nav-dropdown-menu ${prepOpen ? 'mobile-show' : ''}`}>
@@ -171,7 +171,7 @@ const Navbar = () => {
               onMouseLeave={() => { if (window.innerWidth > 768) setProfileOpen(false); }}
               style={{ marginLeft: 'auto' }}
             >
-              <button className="nav-dropdown-trigger" onClick={(e) => { e.preventDefault(); setProfileOpen(!profileOpen); }}>
+              <button className="nav-dropdown-trigger" onClick={(e) => { e.preventDefault(); if (window.innerWidth <= 768) setProfileOpen(!profileOpen); }}>
                 👤 {user.name} {user.isPremium && <span style={{ background: 'linear-gradient(to right, #6366f1, #a855f7)', color: 'white', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold', marginLeft: '4px' }}>PRO</span>} <span className="chevron-down">{profileOpen ? '▲' : '▼'}</span>
               </button>
               <div className={`nav-dropdown-menu ${profileOpen ? 'mobile-show' : ''}`}>

@@ -690,6 +690,138 @@ const LandingPage = () => {
           </div>
         </motion.section>
 
+        {/* ═══════════ PREMIUM PRICING PLANS ═══════════ */}
+        <motion.section
+          className="lp-section"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={staggerContainer}
+        >
+          <motion.div variants={fadeUp} className="lp-section-header">
+            <div className="lp-section-kicker">⚡ LEVEL UP YOUR CAREER</div>
+            <h2 className="lp-section-title">Choose Your Preparation Tier</h2>
+            <p className="lp-section-sub">Flexible column-wise premium options for DSA & Academy Courses</p>
+          </motion.div>
+
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '2rem', maxWidth: '1150px', margin: '3.5rem auto 0', padding: '0 1rem'
+          }}>
+            {/* LITE PLAN */}
+            <motion.div variants={fadeUp} custom={0} style={{
+              background: 'var(--card-bg, rgba(30, 41, 59, 0.7))',
+              backdropFilter: 'blur(16px)', borderRadius: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.1)', padding: '2.5rem 2rem',
+              display: 'flex', flexDirection: 'column', position: 'relative',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.2)', transition: 'all 0.3s ease'
+            }} whileHover={{ y: -8, borderColor: 'rgba(99, 102, 241, 0.4)' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Lite</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.4rem', margin: '1rem 0 0.5rem' }}>
+                <span style={{ fontSize: '3rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>₹499</span>
+                <span style={{ color: '#94a3b8', fontSize: '0.95rem' }}>/month</span>
+              </div>
+              <p style={{ color: '#94a3b8', fontSize: '0.92rem', minHeight: '44px', marginBottom: '2rem', lineHeight: 1.5 }}>
+                Essential tools for beginners starting their DSA journey.
+              </p>
+              <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', marginBottom: '2rem' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1, marginBottom: '2.5rem' }}>
+                {['100+ Core DSA Questions', 'Judge0 Code Sandbox Access', 'Community Forum Support', 'Standard Course Access'].map(feat => (
+                  <div key={feat} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#cbd5e1', fontSize: '0.95rem' }}>
+                    <span style={{ color: '#6366f1', fontWeight: 'bold' }}>✓</span> {feat}
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => navigate('/preparation')} style={{
+                width: '100%', padding: '0.9rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.15)',
+                background: 'transparent', color: '#fff', fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}>Get Started Lite</button>
+            </motion.div>
+
+            {/* PRO PLAN (RECOMMENDED / GLOW) */}
+            <motion.div variants={fadeUp} custom={1} style={{
+              background: 'linear-gradient(145deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%)',
+              backdropFilter: 'blur(20px)', borderRadius: '24px',
+              border: '2px solid #6366f1', padding: '2.5rem 2rem',
+              display: 'flex', flexDirection: 'column', position: 'relative',
+              boxShadow: '0 0 40px rgba(99, 102, 241, 0.25)', transform: 'scale(1.03)', zIndex: 2
+            }} whileHover={{ y: -8, boxShadow: '0 0 60px rgba(99, 102, 241, 0.4)' }}>
+              <div style={{
+                position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)',
+                background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: '#fff',
+                padding: '0.35rem 1.2rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 800,
+                letterSpacing: '0.08em', boxShadow: '0 4px 12px rgba(99,102,241,0.5)'
+              }}>⭐ MOST POPULAR</div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#818cf8', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Pro</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.4rem', margin: '1rem 0 0.5rem' }}>
+                <span style={{ fontSize: '3rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>₹999</span>
+                <span style={{ color: '#94a3b8', fontSize: '0.95rem' }}>/month</span>
+              </div>
+              <p style={{ color: '#cbd5e1', fontSize: '0.92rem', minHeight: '44px', marginBottom: '2rem', lineHeight: 1.5 }}>
+                Complete DSA mastery + full Academy course unlock.
+              </p>
+              <div style={{ height: '1px', background: 'rgba(255,255,255,0.12)', marginBottom: '2rem' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1, marginBottom: '2.5rem' }}>
+                {[
+                  'All 500+ Premium DSA Problems',
+                  'Unlimited Lightning Code Compiles',
+                  'All Academy Courses & Video Solutions',
+                  'Company-Specific Interview Mocks',
+                  'AI Resume & Cover Letter Scanner'
+                ].map(feat => (
+                  <div key={feat} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#fff', fontSize: '0.95rem', fontWeight: 500 }}>
+                    <span style={{ color: '#818cf8', fontWeight: 'bold' }}>✓</span> {feat}
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => navigate('/preparation')} style={{
+                width: '100%', padding: '1rem', borderRadius: '12px', border: 'none',
+                background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', color: '#fff',
+                fontWeight: 700, fontSize: '1rem', cursor: 'pointer',
+                boxShadow: '0 8px 20px rgba(99, 102, 241, 0.4)', transition: 'all 0.2s'
+              }}>Upgrade to Pro 🚀</button>
+            </motion.div>
+
+            {/* ULTRA PLAN */}
+            <motion.div variants={fadeUp} custom={2} style={{
+              background: 'var(--card-bg, rgba(30, 41, 59, 0.7))',
+              backdropFilter: 'blur(16px)', borderRadius: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.1)', padding: '2.5rem 2rem',
+              display: 'flex', flexDirection: 'column', position: 'relative',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.2)', transition: 'all 0.3s ease'
+            }} whileHover={{ y: -8, borderColor: 'rgba(236, 72, 153, 0.4)' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f472b6', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Ultra</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.4rem', margin: '1rem 0 0.5rem' }}>
+                <span style={{ fontSize: '3rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>₹1,999</span>
+                <span style={{ color: '#94a3b8', fontSize: '0.95rem' }}>/month</span>
+              </div>
+              <p style={{ color: '#94a3b8', fontSize: '0.92rem', minHeight: '44px', marginBottom: '2rem', lineHeight: 1.5 }}>
+                VIP treatment with 1-on-1 mentorship & job referrals.
+              </p>
+              <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', marginBottom: '2rem' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1, marginBottom: '2.5rem' }}>
+                {[
+                  'Everything included in Pro Plan',
+                  '1-on-1 Mentorship Call with Founder',
+                  'Direct Job Referrals to Top MNCs',
+                  '24/7 Dedicated Mentorship Chat',
+                  'Verified Certificate of Excellence'
+                ].map(feat => (
+                  <div key={feat} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#cbd5e1', fontSize: '0.95rem' }}>
+                    <span style={{ color: '#ec4899', fontWeight: 'bold' }}>✓</span> {feat}
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => navigate('/mentors')} style={{
+                width: '100%', padding: '0.9rem', borderRadius: '12px', border: '1px solid rgba(236, 72, 153, 0.4)',
+                background: 'rgba(236, 72, 153, 0.1)', color: '#fff', fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}>Go Ultra VIP ⭐</button>
+            </motion.div>
+          </div>
+        </motion.section>
+
         {/* ═══════════ FREQUENTLY ASKED QUESTIONS ═══════════ */}
         <motion.section
           className="lp-section"

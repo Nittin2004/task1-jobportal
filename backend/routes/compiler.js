@@ -12,7 +12,7 @@ const compilerLimiter = rateLimit({
 
 // ── Judge0 API Integration ────────────────────────────────────────────────────
 // Judge0 CE public API (no key needed for low-rate usage)
-const JUDGE0_API_URL = 'https://ce.judge0.com/submissions?base64_encoded=false&wait=true';
+const JUDGE0_API_URL = 'https://ce.judge0.com/submissions?base64_encoded=true&wait=true';
 
 // Map languages to Judge0 language IDs
 const LANGUAGE_MAP = {
@@ -73,11 +73,17 @@ router.post('/execute', compilerLimiter, async (req, res) => {
     const driverGenerator = require('../utils/driverGenerator');
     const finalCode = driverGenerator(language, code, metaData);
 
+    // Helper to base64 encode strings for Judge0
+    const encodeBase64 = (str) => {
+      if (str === null || str === undefined) return undefined;
+      return Buffer.from(String(str), 'utf8').toString('base64');
+    };
+
     const payload = {
-      source_code: finalCode,
+      source_code: encodeBase64(finalCode),
       language_id: langId,
-      stdin: stdin || '',
-      expected_output: expected_output || undefined,  // let Judge0 do the comparison when provided
+      stdin: encodeBase64(stdin || ''),
+      expected_output: expected_output ? encodeBase64(expected_output) : undefined,  // let Judge0 do the comparison when provided
     };
 
     const j0Res = await fetch(JUDGE0_API_URL, {
@@ -102,19 +108,47 @@ router.post('/execute', compilerLimiter, async (req, res) => {
 
     const result = await j0Res.json();
 
-    const statusId = result.status?.id ?? 0;
-    const statusLabel = result.status?.description ?? STATUS_MAP[statusId]?.label ?? 'Unknown';
-    const statusKind = STATUS_MAP[statusId]?.kind ?? 'runtime_error';
+    let statusId = result.status?.id ?? 0;
+    let statusLabel = result.status?.description ?? STATUS_MAP[statusId]?.label ?? 'Unknown';
+    let statusKind = STATUS_MAP[statusId]?.kind ?? 'runtime_error';
+
+    // Helper to decode base64 outputs from Judge0
+    const decodeBase64 = (str) => {
+      if (!str) return '';
+      try {
+        return Buffer.from(String(str), 'base64').toString('utf8');
+      } catch (e) {
+        return String(str);
+      }
+    };
 
     // Build a single consolidated error message (LeetCode style)
-    // Priority: compile_output (syntax/sematics errors) > stderr (runtime stack traces)
-    const compileOut = result.compile_output?.trim() || '';
-    const stderrOut  = result.stderr?.trim()         || '';
+    // Priority: compile_output (syntax/sematics errors) > stderr (runtime stack traces) > message
+    const compileOut = decodeBase64(result.compile_output).trim();
+    const stderrOut  = decodeBase64(result.stderr).trim();
+    const messageOut = decodeBase64(result.message).trim();
+    const stdoutOut  = decodeBase64(result.stdout);
+
     let error_message = null;
     if (compileOut) {
       error_message = compileOut;           // e.g. "Line 5: SyntaxError: missing ; before statement"
     } else if (stderrOut) {
       error_message = stderrOut;            // e.g. "Traceback (most recent call last): ..."
+    } else if (messageOut) {
+      error_message = messageOut;
+    }
+
+    // Detect Syntax / Compilation errors in interpreted languages (Python, JS) or unmapped compiler errors
+    if (error_message && (statusKind === 'runtime_error' || statusKind === 'compile_error')) {
+      if (/(SyntaxError|IndentationError|TabError|ParseError|TokenError|invalid syntax|unexpected token|unexpected indent|missing \)|missing \}|illegal return|unexpected eof)/i.test(error_message)) {
+        statusKind = 'compile_error';
+        statusLabel = 'Syntax Error';
+        statusId = 6;
+      } else if (/(compilation error|error:\s+expected|error:\s+invalid|undefined reference|cannot find symbol)/i.test(error_message)) {
+        statusKind = 'compile_error';
+        statusLabel = 'Compilation Error';
+        statusId = 6;
+      }
     }
 
     res.json({
@@ -123,7 +157,7 @@ router.post('/execute', compilerLimiter, async (req, res) => {
         label: statusLabel,
         kind: statusKind,
       },
-      stdout: result.stdout || '',
+      stdout: stdoutOut || '',
       stderr: stderrOut,
       compile_output: compileOut,
       error_message,                        // null on success, full detail string on any error

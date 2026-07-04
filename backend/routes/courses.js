@@ -15,6 +15,7 @@ router.get('/', async (req, res) => {
   }
 });
 
+
 // Get single course details
 router.get('/:id', async (req, res) => {
   try {

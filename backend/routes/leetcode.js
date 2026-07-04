@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const Submission = require('../models/Submission');
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -131,4 +132,57 @@ router.get('/:slug', async (req, res) => {
   }
 });
 
+// Save or update latest solution for a question & language
+router.post('/submit', async (req, res) => {
+  try {
+    const { userId, questionSlug, questionTitle, language, code, status, timeTaken, memoryUsed } = req.body;
+    if (!questionSlug || !code || !language) {
+      return res.status(400).json({ error: 'Missing required fields.' });
+    }
+
+    const cleanUserId = (userId && userId !== 'null' && userId !== 'undefined') ? String(userId) : null;
+    const filter = { questionSlug, language, userId: cleanUserId };
+    const update = {
+      questionTitle: questionTitle || questionSlug,
+      code,
+      status: status || 'Finished',
+      timeTaken: timeTaken || null,
+      memoryUsed: memoryUsed || null,
+      updatedAt: new Date()
+    };
+
+    const submission = await Submission.findOneAndUpdate(filter, update, { upsert: true, new: true });
+    res.json({ success: true, submission });
+  } catch (err) {
+    console.error('Error saving submission:', err);
+    res.status(500).json({ error: 'Failed to save submission' });
+  }
+});
+
+// Fetch past submission for a question & language
+router.get('/submission/:slug/:language', async (req, res) => {
+  try {
+    const { slug, language } = req.params;
+    const { userId } = req.query;
+    
+    let submission = null;
+    const cleanUserId = (userId && userId !== 'null' && userId !== 'undefined') ? String(userId) : null;
+    if (cleanUserId) {
+      submission = await Submission.findOne({ questionSlug: slug, language, userId: cleanUserId });
+    }
+    if (!submission) {
+      submission = await Submission.findOne({ questionSlug: slug, language, userId: null });
+    }
+    if (!submission) {
+      submission = await Submission.findOne({ questionSlug: slug, language }).sort({ updatedAt: -1 });
+    }
+
+    res.json({ submission });
+  } catch (err) {
+    console.error('Error fetching submission:', err);
+    res.status(500).json({ error: 'Failed to fetch submission' });
+  }
+});
+
 module.exports = router;
+

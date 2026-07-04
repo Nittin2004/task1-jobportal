@@ -66,6 +66,31 @@ vector<string> __parse_string_array(string s) {
     }
     return res;
 }
+vector<vector<int>> __parse_2d_integer_array(string s) {
+    vector<vector<int>> res;
+    int n = s.size();
+    int i = 0;
+    while (i < n && s[i] != '[') i++;
+    if (i < n) i++;
+    while (i < n) {
+        if (s[i] == '[') {
+            int j = i + 1;
+            string row_str = "[";
+            int depth = 1;
+            while (j < n && depth > 0) {
+                if (s[j] == '[') depth++;
+                else if (s[j] == ']') depth--;
+                row_str += s[j];
+                j++;
+            }
+            res.push_back(__parse_integer_array(row_str));
+            i = j;
+        } else {
+            i++;
+        }
+    }
+    return res;
+}
 string __serialize_integer_array(vector<int>& v) {
     string res = "[";
     for (int i=0; i<v.size(); i++) {
@@ -75,10 +100,19 @@ string __serialize_integer_array(vector<int>& v) {
     res += "]";
     return res;
 }
+string __serialize_2d_integer_array(vector<vector<int>>& v) {
+    string res = "[";
+    for (int i=0; i<v.size(); i++) {
+        res += __serialize_integer_array(v[i]);
+        if (i < v.size()-1) res += ",";
+    }
+    res += "]";
+    return res;
+}
 string __serialize_string_array(vector<string>& v) {
     string res = "[";
     for (int i=0; i<v.size(); i++) {
-        res += "\\"" + v[i] + "\\"";
+        res += "\\\"" + v[i] + "\\\"";
         if (i < v.size()-1) res += ",";
     }
     res += "]";
@@ -92,9 +126,11 @@ int main() {
   
   for (let i = 0; i < meta.params.length; i++) {
     const p = meta.params[i];
-    if (p.type === 'integer[]') {
+    if (p.type === 'integer[]' || p.type === 'list<integer>') {
       driver += `        vector<int> p${i} = __parse_integer_array(line);\n`;
-    } else if (p.type === 'string[]') {
+    } else if (p.type === 'integer[][]' || p.type === 'list<list<integer>>') {
+      driver += `        vector<vector<int>> p${i} = __parse_2d_integer_array(line);\n`;
+    } else if (p.type === 'string[]' || p.type === 'list<string>') {
       driver += `        vector<string> p${i} = __parse_string_array(line);\n`;
     } else if (p.type === 'integer') {
       driver += `        int p${i} = stoi(line);\n`;
@@ -117,10 +153,13 @@ int main() {
   driver += `        Solution sol;\n`;
   const callArgs = meta.params.map((p, i) => `p${i}`).join(', ');
   
-  if (meta.return && meta.return.type === 'integer[]') {
+  if (meta.return && (meta.return.type === 'integer[]' || meta.return.type === 'list<integer>')) {
     driver += `        vector<int> ret = sol.${meta.name}(${callArgs});\n`;
     driver += `        cout << __serialize_integer_array(ret) << endl;\n`;
-  } else if (meta.return && meta.return.type === 'string[]') {
+  } else if (meta.return && (meta.return.type === 'integer[][]' || meta.return.type === 'list<list<integer>>')) {
+    driver += `        vector<vector<int>> ret = sol.${meta.name}(${callArgs});\n`;
+    driver += `        cout << __serialize_2d_integer_array(ret) << endl;\n`;
+  } else if (meta.return && (meta.return.type === 'string[]' || meta.return.type === 'list<string>')) {
     driver += `        vector<string> ret = sol.${meta.name}(${callArgs});\n`;
     driver += `        cout << __serialize_string_array(ret) << endl;\n`;
   } else if (meta.return && meta.return.type === 'boolean') {
@@ -162,10 +201,47 @@ public class Main {
         return arr;
     }
 
+    public static int[][] __parse_2d_integer_array(String s) {
+        List<int[]> res = new ArrayList<>();
+        int n = s.length();
+        int i = 0;
+        while (i < n && s.charAt(i) != '[') i++;
+        if (i < n) i++;
+        while (i < n) {
+            if (s.charAt(i) == '[') {
+                int j = i + 1;
+                StringBuilder rowStr = new StringBuilder("[");
+                int depth = 1;
+                while (j < n && depth > 0) {
+                    char c = s.charAt(j);
+                    if (c == '[') depth++;
+                    else if (c == ']') depth--;
+                    rowStr.append(c);
+                    j++;
+                }
+                res.add(__parse_integer_array_primitive(rowStr.toString()));
+                i = j;
+            } else {
+                i++;
+            }
+        }
+        return res.toArray(new int[0][]);
+    }
+
     public static String __serialize_integer_array(int[] arr) {
         StringBuilder sb = new StringBuilder("[");
         for (int i=0; i<arr.length; i++) {
             sb.append(arr[i]);
+            if (i < arr.length-1) sb.append(",");
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
+    public static String __serialize_2d_integer_array(int[][] arr) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i=0; i<arr.length; i++) {
+            sb.append(__serialize_integer_array(arr[i]));
             if (i < arr.length-1) sb.append(",");
         }
         sb.append("]");
@@ -191,8 +267,10 @@ public class Main {
   
   for (let i = 0; i < meta.params.length; i++) {
     const p = meta.params[i];
-    if (p.type === 'integer[]') {
+    if (p.type === 'integer[]' || p.type === 'list<integer>') {
       driver += `            int[] p${i} = __parse_integer_array_primitive(line);\n`;
+    } else if (p.type === 'integer[][]' || p.type === 'list<list<integer>>') {
+      driver += `            int[][] p${i} = __parse_2d_integer_array(line);\n`;
     } else if (p.type === 'integer') {
       driver += `            int p${i} = Integer.parseInt(line);\n`;
     } else if (p.type === 'string') {
@@ -216,6 +294,9 @@ public class Main {
   if (meta.return && meta.return.type === 'integer[]') {
     driver += `            int[] ret = sol.${meta.name}(${callArgs});\n`;
     driver += `            System.out.println(__serialize_integer_array(ret));\n`;
+  } else if (meta.return && meta.return.type === 'integer[][]') {
+    driver += `            int[][] ret = sol.${meta.name}(${callArgs});\n`;
+    driver += `            System.out.println(__serialize_2d_integer_array(ret));\n`;
   } else if (meta.return && meta.return.type === 'list<integer>') {
     driver += `            List<Integer> ret = sol.${meta.name}(${callArgs});\n`;
     driver += `            System.out.println(__serialize_integer_list(ret));\n`;
@@ -234,7 +315,7 @@ module.exports = function generateDriver(language, userCode, metaDataStr) {
   
   let meta;
   try {
-    meta = JSON.parse(metaDataStr);
+    meta = typeof metaDataStr === 'string' ? JSON.parse(metaDataStr) : metaDataStr;
   } catch (e) {
     return userCode;
   }

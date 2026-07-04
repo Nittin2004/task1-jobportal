@@ -119,7 +119,10 @@ int main() {
 const DiffBadge = ({ d, size = 'sm' }) => {
   const cls = d === 'Easy' ? 'dsa2-easy' : d === 'Medium' ? 'dsa2-medium' : 'dsa2-hard';
   return <span className={`dsa2-diff ${cls} ${size === 'lg' ? 'dsa2-diff-lg' : ''}`}>{d}</span>;
+  
 };
+
+const LANG_LABEL = { javascript: 'JavaScript', python: 'Python', java: 'Java', cpp: 'C++' };
 
 // ── Status helpers ────────────────────────────────────────────────────────────
 const STATUS_META = {
@@ -132,7 +135,7 @@ const STATUS_META = {
   finished:      { color: '#2ea043', bg: 'rgba(46,160,67,0.12)',  border: 'rgba(46,160,67,0.3)',   icon: '✓', label: 'Execution Complete' },
 };
 
-const StatusBadge = ({ kind }) => {
+const StatusBadge = ({ kind, label }) => {
   const m = STATUS_META[kind] || STATUS_META.pending;
   return (
     <span style={{
@@ -141,7 +144,7 @@ const StatusBadge = ({ kind }) => {
       background: m.bg, color: m.color, border: `1px solid ${m.border}`,
       fontWeight: 700, fontSize: '0.78rem', letterSpacing: '0.02em',
     }}>
-      {m.icon} {m.label}
+      {m.icon} {label || m.label}
     </span>
   );
 };
@@ -162,18 +165,19 @@ const InfoBox = ({ label, value, accent }) => (
 
 // ── Language auto-detection ──────────────────────────────────────────────────
 const detectLanguage = (code) => {
-  const t = code.slice(0, 2000); // only look at first 2k chars for speed
-  if (/(#include|using namespace std|::|cout|cin|vector<|endl)/.test(t)) return 'cpp';
-  if (/(import java\.|public class |System\.out\.print|public static void main)/.test(t)) return 'java';
+  if (!code || !code.trim()) return 'javascript';
+  const t = code.slice(0, 3000);
+  if (/(#include|using namespace std|::|cout|cin|vector<|endl|public:|private:|protected:|nullptr|->|\bListNode\s*\*|\bTreeNode\s*\*|\bint\s+main\s*\()/i.test(t)) return 'cpp';
+  if (/(import java\.|public class |System\.out\.print|public static void main|public\s+(static\s+)?(final\s+)?(boolean|int|long|double|float|char|byte|short|String|void|ListNode|TreeNode|List|Map|Set|Queue|Deque|PriorityQueue|Character|Integer|Double)[<\s\[])/i.test(t)) return 'java';
   if (/^\s*(def |import |from |print\(|class \w+:)/m.test(t) && !t.includes(';')) return 'python';
   return 'javascript';
 };
 
 // ── Compiler Panel (right column) ────────────────────────────────────────────
-const CompilerPanel = ({ question }) => {
+const CompilerPanel = ({ question, userProfile }) => {
   const info = getPatternInfo(question.pattern);
   const [lang, setLang]         = useState('javascript');
-  const [code, setCode]         = useState(() => TEMPLATES.javascript(question.title, question.pattern));
+  const [code, setCode]         = useState(() => load(`dsa_draft_${question.id}_javascript`, TEMPLATES.javascript(question.title, question.pattern)));
   const [running, setRunning]   = useState(false);
 
   // per-testcase results from Judge0
@@ -185,6 +189,25 @@ const CompilerPanel = ({ question }) => {
 
   const [consoleTab, setConsoleTab]     = useState('testcase');
   const [activeCase, setActiveCase]     = useState(0);
+  const [pastSubmissions, setPastSubmissions] = useState(null);
+  const [loadingSubmissions, setLoadingSubmissions] = useState(false);
+
+  const fetchSubmissions = useCallback(() => {
+    let slug = question?.link?.includes('problems/') ? question.link.split('problems/')[1].replace('/', '') : String(question?.id || '');
+    if (!slug) return;
+    setLoadingSubmissions(true);
+    const uid = userProfile?._id || userProfile?.id || '';
+    const query = uid ? `?userId=${uid}` : '';
+    fetch(`http://localhost:5000/api/leetcode/submission/${slug}/${lang}${query}`)
+      .then(r => r.json())
+      .then(d => setPastSubmissions(d))
+      .catch(() => setPastSubmissions(null))
+      .finally(() => setLoadingSubmissions(false));
+  }, [question, lang, userProfile]);
+
+  useEffect(() => {
+    fetchSubmissions();
+  }, [userProfile, fetchSubmissions]);
 
   // raw testcase data from backend
   const [examples, setExamples]         = useState([]); // [{ stdin, rawStdin, expectedOutput }]
@@ -218,9 +241,20 @@ const CompilerPanel = ({ question }) => {
     };
   }, [isDragging]);
 
+  const getValidDraft = useCallback((qId, targetLang, defaultCode) => {
+    const draft = load(`dsa_draft_${qId}_${targetLang}`, null);
+    if (!draft) return defaultCode;
+    const det = detectLanguage(draft);
+    if (targetLang === 'cpp' && det !== 'cpp' && det !== 'javascript') { localStorage.removeItem(`dsa_draft_${qId}_${targetLang}`); return defaultCode; }
+    if (targetLang === 'java' && det !== 'java' && det !== 'javascript') { localStorage.removeItem(`dsa_draft_${qId}_${targetLang}`); return defaultCode; }
+    if (targetLang === 'python' && det !== 'python') { localStorage.removeItem(`dsa_draft_${qId}_${targetLang}`); return defaultCode; }
+    return draft;
+  }, []);
+
   // ── fetch testcases whenever question / lang changes ─────────────────────
   useEffect(() => {
-    setCode(snippets[lang] || TEMPLATES[lang](question.title, question.pattern));
+    const fallback = snippets[lang] || TEMPLATES[lang](question.title, question.pattern);
+    setCode(getValidDraft(question.id, lang, fallback));
     setCaseResults([]);
     setGlobalStatus(null);
     setGlobalError('');
@@ -228,6 +262,7 @@ const CompilerPanel = ({ question }) => {
     setCustomStdin('');
     setActiveCase(0);
     setConsoleTab('testcase');
+    fetchSubmissions();
 
     let slug = null;
     if (question.link && question.link.includes('problems/')) {
@@ -248,8 +283,9 @@ const CompilerPanel = ({ question }) => {
             if (s.langSlug === 'cpp') snipMap.cpp = s.code;
           });
           setSnippets(snipMap);
-          // Auto-apply snippet if we just loaded it for the active lang
-          if (snipMap[lang]) setCode(snipMap[lang]);
+          // Auto-apply snippet or valid local draft if we just loaded it for active lang
+          const fallback = snipMap[lang] || TEMPLATES[lang](question.title, question.pattern);
+          setCode(getValidDraft(question.id, lang, fallback));
         }
 
         if (d.examples && d.examples.length > 0) {
@@ -288,13 +324,29 @@ const CompilerPanel = ({ question }) => {
 
   const lineNums = code.split('\n').map((_, i) => i + 1).join('\n');
 
-  // ── detect language whenever code changes ────────────────────────────────
+  // ── detect language & save draft whenever code changes ───────────────────
   useEffect(() => {
     const d = detectLanguage(code);
     setDetectedLang(d);
-  }, [code]);
+    if (question?.id && code) {
+      const isStarter = code === TEMPLATES[lang]?.(question.title, question.pattern) || code === snippets[lang];
+      if (!isStarter) {
+        save(`dsa_draft_${question.id}_${lang}`, code);
+      }
+    }
+  }, [code, lang, question, snippets]);
 
-  const langMismatch = detectedLang !== lang;
+  // Only show warning banner if there is an unmistakable syntax contradiction
+  const isUnmistakableMismatch = (codeStr, activeTab) => {
+    if (!codeStr || codeStr.trim().length < 20) return false;
+    if (codeStr === TEMPLATES[activeTab]?.(question?.title, question?.pattern) || codeStr === snippets[activeTab]) return false;
+    if (activeTab === 'cpp' && /^\s*(def |import java\.|public class )/m.test(codeStr)) return true;
+    if (activeTab === 'java' && /^\s*(def |#include)/m.test(codeStr)) return true;
+    if (activeTab === 'python' && /(#include|public class |public static void main|;\s*$)/m.test(codeStr)) return true;
+    if (activeTab === 'javascript' && /(#include|public class |^\s*def |using namespace)/m.test(codeStr)) return true;
+    return false;
+  };
+  const langMismatch = isUnmistakableMismatch(code, lang);
   const LANG_LABEL = { javascript: 'JavaScript', python: 'Python', java: 'Java', cpp: 'C++' };
 
   // ── Smart editor key handler (brackets, indentation) ──────────────────────
@@ -408,13 +460,10 @@ const CompilerPanel = ({ question }) => {
   };
 
 
-  // ── Run Code ─────────────────────────────────────────────────────────────
-  const runCode = async () => {
-    // Auto-fix language mismatch before running
-    const effectiveLang = detectLanguage(code);
-    if (effectiveLang !== lang) {
-      setLang(effectiveLang);
-    }
+  // ── Run Code / Submit ────────────────────────────────────────────────────
+  const runCode = async (isSubmit = false) => {
+    // Run code with the currently selected language tab
+    const effectiveLang = lang;
 
     setRunning(true);
     setConsoleTab('result');
@@ -503,6 +552,28 @@ const CompilerPanel = ({ question }) => {
       if (totalTime > 0) setRunTime(totalTime.toFixed(3));
       if (maxMemory > 0) setRunMemory((maxMemory / 1024).toFixed(1));
 
+      // Save submission to database if user submitted or if execution succeeded clean
+      if (isSubmit || overallKind === 'finished') {
+        let slug = question.link?.includes('problems/') ? question.link.split('problems/')[1].replace('/', '') : String(question.id);
+        const subStatus = overallKind === 'finished' ? 'Accepted' : (STATUS_META[overallKind]?.label || 'Wrong Answer');
+        await fetch('http://localhost:5000/api/leetcode/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: userProfile?._id || userProfile?.id || null,
+            questionSlug: slug,
+            questionTitle: question.title,
+            language: lang,
+            code,
+            status: subStatus,
+            timeTaken: totalTime > 0 ? totalTime.toFixed(3) + 's' : null,
+            memoryUsed: maxMemory > 0 ? Math.round(maxMemory) : null
+          })
+        }).catch(() => {});
+        fetchSubmissions();
+        if (isSubmit) setConsoleTab('submissions');
+      }
+
     } catch (err) {
       setGlobalError('Failed to reach the execution server: ' + err.message);
       setGlobalStatus('runtime_error');
@@ -529,7 +600,8 @@ const CompilerPanel = ({ question }) => {
                 className={`dsa2-lang-tab ${lang === l ? 'active' : ''}`}
                 onClick={() => {
                   setLang(l);
-                  setCode(snippets[l] || TEMPLATES[l](question.title, question.pattern));
+                  const fallback = snippets[l] || TEMPLATES[l](question.title, question.pattern);
+                  setCode(getValidDraft(question.id, l, fallback));
                 }}
                 style={isDetected ? { position: 'relative' } : {}}
               >
@@ -549,9 +621,38 @@ const CompilerPanel = ({ question }) => {
           <span className="dsa2-tc">⏱ {info.tc}</span>
           <span className="dsa2-sc">🗂 {info.sc}</span>
         </div>
-        <button className="dsa2-run-btn" onClick={runCode} disabled={running}>
-          {running ? '⏳' : '▶'} {running ? 'Running…' : 'Run Code'}
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button
+            title="Reset code to original template"
+            onClick={() => {
+              if (window.confirm('Reset code to default template? Your current edits will be cleared.')) {
+                localStorage.removeItem(`dsa_draft_${question.id}_${lang}`);
+                setCode(snippets[lang] || TEMPLATES[lang](question.title, question.pattern));
+              }
+            }}
+            style={{
+              background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)',
+              borderRadius: '6px', padding: '0.35rem 0.65rem', cursor: 'pointer', fontSize: '0.8rem',
+              display: 'flex', alignItems: 'center', gap: '0.3rem'
+            }}
+          >
+            🔄 Reset
+          </button>
+          <button className="dsa2-run-btn" onClick={() => runCode(false)} disabled={running}>
+            {running ? '⏳' : '▶'} Run Code
+          </button>
+          <button
+            onClick={() => runCode(true)}
+            disabled={running}
+            style={{
+              background: '#2ea043', color: '#fff', border: 'none', borderRadius: '6px',
+              padding: '0.45rem 1rem', fontWeight: 700, fontSize: '0.85rem', cursor: running ? 'not-allowed' : 'pointer',
+              display: 'flex', alignItems: 'center', gap: '0.35rem', transition: 'all 0.2s', opacity: running ? 0.7 : 1
+            }}
+          >
+            {running ? '⏳' : '🚀'} Submit
+          </button>
+        </div>
       </div>
 
       {/* ── Language mismatch warning ─────────────────────────────────────── */}
@@ -563,8 +664,7 @@ const CompilerPanel = ({ question }) => {
           border: '1px solid rgba(245,158,11,0.35)', fontSize: '0.8rem',
         }}>
           <span style={{ color: '#f59e0b' }}>
-            ⚠ Detected <strong>{LANG_LABEL[detectedLang]}</strong> code but <strong>{LANG_LABEL[lang]}</strong> tab is selected.
-            Running will auto-switch to <strong>{LANG_LABEL[detectedLang]}</strong>.
+            ⚠ Detected <strong>{LANG_LABEL[detectedLang]}</strong> syntax while <strong>{LANG_LABEL[lang]}</strong> tab is active.
           </span>
           <button
             onClick={() => setLang(detectedLang)}
@@ -615,10 +715,10 @@ const CompilerPanel = ({ question }) => {
       }}>
         {/* tabs */}
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.75rem', flexShrink: 0 }}>
-          {['testcase', 'result'].map(tab => (
+          {['testcase', 'result', 'submissions'].map(tab => (
             <button
               key={tab}
-              onClick={() => setConsoleTab(tab)}
+              onClick={() => { setConsoleTab(tab); if (tab === 'submissions') fetchSubmissions(); }}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600,
                 padding: '0.4rem 0', fontSize: '0.85rem',
@@ -627,7 +727,7 @@ const CompilerPanel = ({ question }) => {
                 transition: 'all 0.2s',
               }}
             >
-              {tab === 'testcase' ? 'Testcase' : 'Test Result'}
+              {tab === 'testcase' ? 'Testcase' : tab === 'result' ? 'Test Result' : 'Submissions'}
             </button>
           ))}
         </div>
@@ -704,7 +804,7 @@ const CompilerPanel = ({ question }) => {
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <div>
                       <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 700, color: activeMeta.color }}>
-                        {activeMeta.icon} {activeMeta.label}
+                        {activeMeta.icon} {caseResults.find(r => r?.data?.status?.label)?.data?.status?.label || activeMeta.label}
                       </h3>
                       {(runTime || runMemory) && (
                         <div style={{ marginTop: '0.35rem', fontSize: '0.8rem', color: 'var(--dsa-text-muted)' }}>
@@ -765,7 +865,7 @@ const CompilerPanel = ({ question }) => {
                     }}>
                       {/* Case header */}
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                        <StatusBadge kind={caseBadgeKind} />
+                        <StatusBadge kind={caseBadgeKind} label={d?.status?.label} />
                         {d?.time && (
                           <span style={{ fontSize: '0.78rem', color: 'var(--dsa-text-muted)' }}>{parseFloat(d.time) * 1000 | 0} ms</span>
                         )}
@@ -774,14 +874,14 @@ const CompilerPanel = ({ question }) => {
                       {/* Compile Error */}
                       {isCompileError && (
                         <div>
-                          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--dsa-text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.4rem' }}>Compilation Error</div>
+                          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--dsa-text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.4rem' }}>{d?.status?.label || 'Compilation Error'}</div>
                           <pre style={{
                             margin: 0, padding: '0.75rem 1rem', borderRadius: '8px',
                             background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)',
                             color: '#ef4444', fontFamily: 'monospace', fontSize: '0.82rem',
                             lineHeight: 1.6, overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
                           }}>
-                            {d.compile_output || d.stderr || 'No output'}
+                            {d.error_message || d.compile_output || d.stderr || 'No compilation output'}
                           </pre>
                         </div>
                       )}
@@ -794,17 +894,35 @@ const CompilerPanel = ({ question }) => {
                       )}
 
                       {/* Runtime error stderr */}
-                      {kind === 'runtime_error' && d?.stderr && (
+                      {kind === 'runtime_error' && (
                         <div>
-                          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--dsa-text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.4rem' }}>Runtime Error</div>
-                          <pre style={{
-                            margin: 0, padding: '0.75rem 1rem', borderRadius: '8px',
-                            background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)',
-                            color: '#ef4444', fontFamily: 'monospace', fontSize: '0.82rem',
-                            lineHeight: 1.6, overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-                          }}>
-                            {d.stderr}
-                          </pre>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--dsa-text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{d?.status?.label || 'Runtime Error'}</div>
+                            {/* Show exact Judge0 signal label e.g. "Runtime Error (SIGSEGV)" */}
+                            {d?.status?.label && d.status.label !== 'Runtime Error' && (
+                              <span style={{
+                                fontSize: '0.7rem', fontWeight: 600, color: '#ef4444',
+                                background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)',
+                                borderRadius: '4px', padding: '0.1rem 0.45rem',
+                              }}>
+                                {d.status.label}
+                              </span>
+                            )}
+                          </div>
+                          {(d.error_message || d.stderr) ? (
+                            <pre style={{
+                              margin: 0, padding: '0.75rem 1rem', borderRadius: '8px',
+                              background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)',
+                              color: '#ef4444', fontFamily: 'monospace', fontSize: '0.82rem',
+                              lineHeight: 1.6, overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+                            }}>
+                              {d.error_message || d.stderr}
+                            </pre>
+                          ) : (
+                            <div style={{ fontSize: '0.85rem', color: '#ef4444', opacity: 0.8 }}>
+                              The program crashed with no output. Check for null/undefined access, infinite loops, or memory issues.
+                            </div>
+                          )}
                         </div>
                       )}
 
@@ -868,6 +986,82 @@ const CompilerPanel = ({ question }) => {
                 })()}
               </div>
             )}
+          </div>
+        )}
+
+        {/* ── Submissions tab ────────────────────────────────────────────── */}
+        {consoleTab === 'submissions' && (
+          <div style={{ padding: '0.5rem 0' }}>
+            {loadingSubmissions && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--dsa-text-muted)' }}>
+                <span style={{ fontSize: '1.2rem', animation: 'spin 1s linear infinite', display: 'inline-block' }}>⏳</span>
+                <span>Loading past submissions…</span>
+              </div>
+            )}
+            {!loadingSubmissions && !pastSubmissions?.submission && (
+              <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--dsa-text-muted)', border: '1px dashed var(--dsa-border)', borderRadius: '12px' }}>
+                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📭</div>
+                <div style={{ fontWeight: 600, color: 'var(--dsa-text)' }}>No submissions yet for {LANG_LABEL[lang] || lang}</div>
+                <p style={{ fontSize: '0.85rem', margin: '0.3rem 0 0' }}>Write your solution and click 🚀 Submit to save it here!</p>
+              </div>
+            )}
+            {!loadingSubmissions && pastSubmissions?.submission && (() => {
+              const sub = pastSubmissions.submission;
+              const isAcc = sub.status === 'Accepted' || sub.status === 'Finished';
+              return (
+                <div style={{ border: '1px solid var(--dsa-border)', borderRadius: '12px', background: 'var(--dsa-bg-secondary)', padding: '1.25rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <span style={{
+                        padding: '0.3rem 0.8rem', borderRadius: '999px', fontWeight: 700, fontSize: '0.8rem',
+                        background: isAcc ? 'rgba(46,160,67,0.15)' : 'rgba(239,68,68,0.15)',
+                        color: isAcc ? '#2ea043' : '#ef4444',
+                        border: `1px solid ${isAcc ? 'rgba(46,160,67,0.3)' : 'rgba(239,68,68,0.3)'}`
+                      }}>
+                        {isAcc ? '✓ Accepted' : `✗ ${sub.status}`}
+                      </span>
+                      <span style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--dsa-text-muted)' }}>
+                        Language: <strong style={{ color: 'var(--dsa-text)' }}>{LANG_LABEL[sub.language] || sub.language}</strong>
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--dsa-text-muted)' }}>
+                      Submitted: {new Date(sub.updatedAt || sub.createdAt || Date.now()).toLocaleString()}
+                    </div>
+                  </div>
+
+                  {(sub.timeTaken || sub.memoryUsed) && (
+                    <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '1rem', background: 'var(--dsa-bg-primary)', padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid var(--dsa-border)' }}>
+                      {sub.timeTaken && <div style={{ fontSize: '0.85rem' }}>⏱ Runtime: <strong style={{ color: '#2ea043' }}>{sub.timeTaken}</strong></div>}
+                      {sub.memoryUsed && <div style={{ fontSize: '0.85rem' }}>🗂 Memory: <strong style={{ color: '#3b82f6' }}>{sub.memoryUsed} KB</strong></div>}
+                    </div>
+                  )}
+
+                  <div style={{ marginBottom: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--dsa-text-muted)', textTransform: 'uppercase' }}>Submitted Code</span>
+                    <button
+                      onClick={() => {
+                        if (window.confirm('Load this submitted code into the editor?')) {
+                          setCode(sub.code);
+                        }
+                      }}
+                      style={{
+                        background: 'rgba(31,111,235,0.1)', color: 'var(--primary)', border: '1px solid rgba(31,111,235,0.3)',
+                        borderRadius: '6px', padding: '0.3rem 0.75rem', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer'
+                      }}
+                    >
+                      📥 Load into Editor
+                    </button>
+                  </div>
+                  <pre style={{
+                    margin: 0, padding: '0.8rem', borderRadius: '8px', background: 'var(--dsa-bg-primary)',
+                    border: '1px solid var(--dsa-border)', fontFamily: 'monospace', fontSize: '0.85rem',
+                    maxHeight: '250px', overflowY: 'auto', whiteSpace: 'pre-wrap'
+                  }}>
+                    {sub.code}
+                  </pre>
+                </div>
+              );
+            })()}
           </div>
         )}
         </div>
@@ -1012,6 +1206,97 @@ const ProblemPanel = ({ question, solved, bookmarked, notes, onSolve, onBookmark
   );
 };
 
+// ── Pagination Bar ────────────────────────────────────────────────────────────
+const PaginationBar = ({ currentPage, totalPages, totalCount, onPageChange }) => {
+  if (totalPages <= 1) return null;
+
+  // Build page list with null as ellipsis sentinel
+  const all = Array.from({ length: totalPages }, (_, i) => i + 1)
+    .filter(pg => pg === 1 || pg === totalPages || Math.abs(pg - currentPage) <= 2);
+  const pageItems = [];
+  all.forEach((pg, idx) => {
+    if (idx > 0 && pg - all[idx - 1] > 1) pageItems.push(null);
+    pageItems.push(pg);
+  });
+
+  const btnBase = {
+    padding: '0.4rem 0.85rem', borderRadius: '8px', fontWeight: 600,
+    fontSize: '0.82rem', transition: 'all 0.2s',
+  };
+  const mutedColor  = 'var(--text-muted, #8b949e)';
+  const primaryColor = 'var(--primary, #1f6feb)';
+
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      gap: '0.4rem', padding: '1.25rem 1rem 1rem',
+      borderTop: '1px solid var(--border, #30363d)',
+      flexWrap: 'wrap',
+    }}>
+      {/* Prev */}
+      <button
+        onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+        disabled={currentPage === 1}
+        style={Object.assign({}, btnBase, {
+          cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+          background: currentPage === 1 ? 'rgba(139,148,158,0.08)' : 'rgba(31,111,235,0.1)',
+          color: currentPage === 1 ? mutedColor : primaryColor,
+          border: '1px solid ' + (currentPage === 1 ? 'rgba(139,148,158,0.2)' : 'rgba(31,111,235,0.3)'),
+          opacity: currentPage === 1 ? 0.5 : 1,
+        })}
+      >
+        {'<'} Prev
+      </button>
+
+      {/* Page numbers */}
+      {pageItems.map((pg, idx) =>
+        pg === null ? (
+          <span key={'ellipsis-' + idx} style={{ padding: '0 0.3rem', color: mutedColor, fontSize: '0.85rem' }}>
+            ...
+          </span>
+        ) : (
+          <button
+            key={pg}
+            onClick={() => onPageChange(pg)}
+            style={{
+              minWidth: '36px', height: '36px', borderRadius: '8px',
+              fontWeight: pg === currentPage ? 700 : 500, fontSize: '0.85rem',
+              cursor: pg === currentPage ? 'default' : 'pointer',
+              background: pg === currentPage ? 'linear-gradient(135deg, #1f6feb, #3b82f6)' : 'rgba(139,148,158,0.08)',
+              color: pg === currentPage ? '#fff' : mutedColor,
+              border: '1px solid ' + (pg === currentPage ? '#1f6feb' : 'rgba(139,148,158,0.2)'),
+              boxShadow: pg === currentPage ? '0 2px 8px rgba(31,111,235,0.35)' : 'none',
+              transition: 'all 0.2s',
+            }}
+          >
+            {pg}
+          </button>
+        )
+      )}
+
+      {/* Next */}
+      <button
+        onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+        disabled={currentPage === totalPages}
+        style={Object.assign({}, btnBase, {
+          cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+          background: currentPage === totalPages ? 'rgba(139,148,158,0.08)' : 'rgba(31,111,235,0.1)',
+          color: currentPage === totalPages ? mutedColor : primaryColor,
+          border: '1px solid ' + (currentPage === totalPages ? 'rgba(139,148,158,0.2)' : 'rgba(31,111,235,0.3)'),
+          opacity: currentPage === totalPages ? 0.5 : 1,
+        })}
+      >
+        Next {'>'}
+      </button>
+
+      {/* Page info */}
+      <span style={{ marginLeft: '0.5rem', fontSize: '0.78rem', color: mutedColor }}>
+        Page {currentPage} of {totalPages} &nbsp;{'·'}&nbsp; {totalCount} questions
+      </span>
+    </div>
+  );
+};
+
 // ── Main DSACheatSheet ────────────────────────────────────────────────────────
 const DSACheatSheet = ({ embedded }) => {
   // Persistence
@@ -1058,6 +1343,8 @@ const DSACheatSheet = ({ embedded }) => {
   const [diffFilter,   setDiffFilter]   = useState('All');
   const [showBm,       setShowBm]       = useState(false);
   const [selectedQ,    setSelectedQ]    = useState(null);
+  const [currentPage,  setCurrentPage]  = useState(1);
+  const PAGE_SIZE = 10;
   const searchRef = useRef(null);
 
   // Stats
@@ -1084,6 +1371,12 @@ const DSACheatSheet = ({ embedded }) => {
       return matchSearch && matchDiff;
     });
   }, [search, diffFilter, showBm, activeTopic, bookmarked]);
+
+  // Reset to page 1 whenever filters change
+  useEffect(() => { setCurrentPage(1); }, [search, diffFilter, showBm, activeTopic]);
+
+  const totalPages   = Math.ceil(displayQuestions.length / PAGE_SIZE);
+  const pagedQuestions = displayQuestions.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   // Topic sidebar stats
   const topicStats = useMemo(() =>
@@ -1161,7 +1454,7 @@ const DSACheatSheet = ({ embedded }) => {
                     setIsPremiumModalOpen(true);
                     return;
                   }
-                  setActiveTopic(ts.name); setShowBm(false); setSearch(''); setSelectedQ(null); 
+                  setActiveTopic(ts.name); setShowBm(false); setSearch(''); setSelectedQ(null); setCurrentPage(1); 
                 }}
               >
                 <span className="dsa2-topic-ic">{locked ? <Lock size={16}/> : ts.icon}</span>
@@ -1278,7 +1571,7 @@ const DSACheatSheet = ({ embedded }) => {
                   overflow: 'hidden', background: 'var(--dsa-bg-primary)',
                   display: 'flex', flexDirection: 'column',
                 }}>
-                  <CompilerPanel question={selectedQ} />
+                  <CompilerPanel question={selectedQ} userProfile={userProfile} />
                 </div>
               </div>
             </div>
@@ -1341,78 +1634,83 @@ const DSACheatSheet = ({ embedded }) => {
                   {!showBm && <button className="btn-primary" style={{ marginTop: '1rem' }} onClick={() => { setSearch(''); setDiffFilter('All'); }}>Reset</button>}
                 </div>
               ) : (
-                <div className="dsa2-table-wrap">
-                  <table className="dsa2-table">
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>Question</th>
-                        <th>Difficulty</th>
-                        <th>Pattern</th>
-                        <th>Companies</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {displayQuestions.map(q => {
-                        const isSolved = !!solved[q.id];
-                        const isBm     = !!bookmarked[q.id];
-                        const hasNote  = !!(notes[q.id]?.trim());
-                        const topicIndex = Object.keys(DSA_TOPICS).indexOf(q.topic);
-                        const isLocked = !hasAccess(topicIndex);
-                        return (
-                          <tr
-                            key={q.id}
-                            className={`dsa2-tr ${isSolved ? 'solved' : ''} ${isLocked ? 'locked-row' : ''}`}
-                            style={{ opacity: isLocked ? 0.7 : 1, cursor: isLocked ? 'not-allowed' : 'pointer' }}
-                            onClick={() => {
-                              if (isLocked) {
-                                setIsPremiumModalOpen(true);
-                                return;
-                              }
-                              setSelectedQ(q);
-                            }}
-                          >
-                            <td className="dsa2-num">{q.no}</td>
-                            <td>
-                              <div className="dsa2-title-cell">
-                                {isSolved && <span className="dsa2-solved-dot" />}
-                                <span className="dsa2-q-title">{q.title}</span>
-                                <div className="dsa2-indicators">
-                                  {hasNote && <span title="Has notes" style={{ fontSize: '0.7rem' }}>📝</span>}
-                                  {isBm    && <span title="Bookmarked" style={{ fontSize: '0.7rem' }}>🔖</span>}
+                <>
+                  <div className="dsa2-table-wrap">
+                    <table className="dsa2-table">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Question</th>
+                          <th>Difficulty</th>
+                          <th>Pattern</th>
+                          <th>Companies</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pagedQuestions.map(q => {
+                          const isSolved = !!solved[q.id];
+                          const isBm     = !!bookmarked[q.id];
+                          const hasNote  = !!(notes[q.id]?.trim());
+                          const topicIndex = Object.keys(DSA_TOPICS).indexOf(q.topic);
+                          const isLocked = !hasAccess(topicIndex);
+                          return (
+                            <tr
+                              key={q.id}
+                              className={'dsa2-tr' + (isSolved ? ' solved' : '') + (isLocked ? ' locked-row' : '')}
+                              style={{ opacity: isLocked ? 0.7 : 1, cursor: isLocked ? 'not-allowed' : 'pointer' }}
+                              onClick={() => {
+                                if (isLocked) { setIsPremiumModalOpen(true); return; }
+                                setSelectedQ(q);
+                              }}
+                            >
+                              <td className="dsa2-num">{q.no}</td>
+                              <td>
+                                <div className="dsa2-title-cell">
+                                  {isSolved && <span className="dsa2-solved-dot" />}
+                                  <span className="dsa2-q-title">{q.title}</span>
+                                  <div className="dsa2-indicators">
+                                    {hasNote && <span title="Has notes" style={{ fontSize: '0.7rem' }}>📝</span>}
+                                    {isBm    && <span title="Bookmarked" style={{ fontSize: '0.7rem' }}>🔖</span>}
+                                  </div>
                                 </div>
-                              </div>
-                              {search && <span className="dsa2-topic-label">{q.topic}</span>}
-                            </td>
-                            <td><DiffBadge d={q.difficulty} /></td>
-                            <td><span className="dsa2-pat-tag">{q.pattern}</span></td>
-                            <td>
-                              <div className="dsa2-co-list">
-                                {q.companies.slice(0, 2).map(c => <span key={c} className="dsa2-co">{c}</span>)}
-                                {q.companies.length > 2 && <span className="dsa2-co-more">+{q.companies.length - 2}</span>}
-                              </div>
-                            </td>
-                            <td onClick={e => e.stopPropagation()}>
-                              <div className="dsa2-act">
-                                <button
-                                  className={`dsa2-act-btn ${isSolved ? 'green' : ''}`}
-                                  onClick={() => toggleSolved(q.id)}
-                                  title={isSolved ? 'Unmark' : 'Mark solved'}
-                                >{isSolved ? '✅' : '○'}</button>
-                                <button
-                                  className={`dsa2-act-btn ${isBm ? 'blue' : ''}`}
-                                  onClick={() => toggleBookmark(q.id)}
-                                  title="Bookmark"
-                                >{isBm ? '🔖' : '🔲'}</button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                                {search && <span className="dsa2-topic-label">{q.topic}</span>}
+                              </td>
+                              <td><DiffBadge d={q.difficulty} /></td>
+                              <td><span className="dsa2-pat-tag">{q.pattern}</span></td>
+                              <td>
+                                <div className="dsa2-co-list">
+                                  {q.companies.slice(0, 2).map(c => <span key={c} className="dsa2-co">{c}</span>)}
+                                  {q.companies.length > 2 && <span className="dsa2-co-more">+{q.companies.length - 2}</span>}
+                                </div>
+                              </td>
+                              <td onClick={e => e.stopPropagation()}>
+                                <div className="dsa2-act">
+                                  <button
+                                    className={'dsa2-act-btn' + (isSolved ? ' green' : '')}
+                                    onClick={() => toggleSolved(q.id)}
+                                    title={isSolved ? 'Unmark' : 'Mark solved'}
+                                  >{isSolved ? '✅' : '○'}</button>
+                                  <button
+                                    className={'dsa2-act-btn' + (isBm ? ' blue' : '')}
+                                    onClick={() => toggleBookmark(q.id)}
+                                    title="Bookmark"
+                                  >{isBm ? '🔖' : '🔲'}</button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  <PaginationBar
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalCount={displayQuestions.length}
+                    onPageChange={setCurrentPage}
+                  />
+                </>
               )}
             </>
           </div>{/* end content area */}

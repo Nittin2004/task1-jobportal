@@ -9,15 +9,33 @@ const Jobs = () => {
   const [location, setLocation] = useState('');
   const [jobType, setJobType] = useState('');
 
-  const fetchJobs = async () => {
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalJobs, setTotalJobs] = useState(0);
+
+  const fetchJobs = async (pageNum = 1) => {
     setLoading(true);
     try {
-      const params = {};
+      const params = { page: pageNum, limit: 6 };
       if (search) params.search = search;
       if (location) params.location = location;
       if (jobType) params.jobType = jobType;
       const res = await getJobs(params);
-      setJobs(res.data);
+      
+      // If backend returned paginated object { data, total, page, pages }
+      if (res.data && res.data.data) {
+        setJobs(res.data.data);
+        setPage(res.data.page || pageNum);
+        setTotalPages(res.data.pages || 1);
+        setTotalJobs(res.data.total || res.data.data.length);
+      } else {
+        // Fallback if backend returned array
+        setJobs(Array.isArray(res.data) ? res.data : []);
+        setPage(1);
+        setTotalPages(1);
+        setTotalJobs(Array.isArray(res.data) ? res.data.length : 0);
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -25,11 +43,11 @@ const Jobs = () => {
     }
   };
 
-  useEffect(() => { fetchJobs(); }, []);
+  useEffect(() => { fetchJobs(1); }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchJobs();
+    fetchJobs(1);
   };
 
   return (
@@ -76,11 +94,48 @@ const Jobs = () => {
         ) : (
           <>
             <p style={{ marginBottom: '1rem', color: 'var(--text-muted)' }}>
-              Found <strong>{jobs.length}</strong> job{jobs.length !== 1 ? 's' : ''}
+              Showing page <strong>{page}</strong> of <strong>{totalPages}</strong> ({totalJobs} total job{totalJobs !== 1 ? 's' : ''})
             </p>
             <div className="jobs-grid">
               {jobs.map((job) => <JobCard key={job._id} job={job} />)}
             </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div style={{
+                display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1.5rem', marginTop: '3rem', paddingBottom: '2rem'
+              }}>
+                <button
+                  disabled={page <= 1}
+                  onClick={() => { fetchJobs(page - 1); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+                  style={{
+                    padding: '0.6rem 1.25rem', borderRadius: '8px', border: '1px solid var(--border)',
+                    background: page <= 1 ? 'transparent' : 'var(--primary)',
+                    color: page <= 1 ? 'var(--text-muted)' : '#fff',
+                    fontWeight: 600, cursor: page <= 1 ? 'not-allowed' : 'pointer',
+                    opacity: page <= 1 ? 0.4 : 1, transition: 'all 0.2s',
+                  }}
+                >
+                  ← Previous
+                </button>
+                <span style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text)' }}>
+                  Page {page} of {totalPages}
+                </span>
+                <button
+                  disabled={page >= totalPages}
+                  onClick={() => { fetchJobs(page + 1); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+                  style={{
+                    padding: '0.6rem 1.25rem', borderRadius: '8px', border: '1px solid var(--border)',
+                    background: page >= totalPages ? 'transparent' : 'var(--primary)',
+                    color: page >= totalPages ? 'var(--text-muted)' : '#fff',
+                    fontWeight: 600, cursor: page >= totalPages ? 'not-allowed' : 'pointer',
+                    opacity: page >= totalPages ? 0.4 : 1, transition: 'all 0.2s',
+                  }}
+                >
+                  Next →
+                </button>
+              </div>
+            )}
           </>
         )}
       </div>
