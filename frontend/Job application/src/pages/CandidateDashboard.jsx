@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { getMyApplications, getSavedJobs, unsaveJob, getProfile, updateProfile, uploadResume } from '../services/api';
+import { getMyApplications, getSavedJobs, unsaveJob, getProfile, updateProfile, uploadResume, getMyBookings } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import DashboardLayout from '../components/DashboardLayout';
 
@@ -28,6 +28,7 @@ const CandidateDashboard = () => {
   const [applications, setApplications] = useState([]);
   const [savedJobs, setSavedJobs] = useState([]);
   const [profile, setProfile] = useState(null);
+  const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ name: '', phone: '', skills: '', experience: '', education: '' });
@@ -50,14 +51,16 @@ const CandidateDashboard = () => {
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const [appsRes, savedRes, profileRes] = await Promise.all([
+        const [appsRes, savedRes, profileRes, bookingsRes] = await Promise.all([
           getMyApplications(),
           getSavedJobs(),
           getProfile(),
+          getMyBookings().catch(() => ({ data: [] })),
         ]);
         setApplications(appsRes.data);
         setSavedJobs(savedRes.data);
         setProfile(profileRes.data);
+        setBookings(bookingsRes.data || []);
       } catch {
         toast.error('Failed to load dashboard');
       } finally {
@@ -326,33 +329,58 @@ const CandidateDashboard = () => {
           </div>
 
           <div className="ds-section-card">
-            <h3>Upcoming Sessions</h3>
-            <div className="ds-cards-grid" style={{ marginTop: '1rem' }}>
-              <div className="ds-mentor-session-card">
-                <div className="ds-ms-header">
-                  <div className="ds-ms-date">
-                    <span className="ds-ms-month">OCT</span>
-                    <span className="ds-ms-day">24</span>
-                  </div>
-                  <div className="ds-ms-info">
-                    <h4>Mock Interview (DSA)</h4>
-                    <p>with <strong>Sarah Jenkins</strong> (Google SDE)</p>
-                  </div>
-                </div>
-                <div className="ds-ms-details">
-                  <p>🕒 10:00 AM - 11:00 AM IST</p>
-                  <p>📹 Google Meet</p>
-                </div>
-                <button className="btn-primary" style={{ width: '100%', marginTop: '1rem', background: '#10b981', borderColor: '#10b981' }}>Join Call</button>
+            <h3>My Booked Sessions ({bookings.length})</h3>
+            {bookings.length === 0 ? (
+              <div className="ds-empty-mini" style={{ textAlign: 'center', padding: '3rem' }}>
+                <p style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📅</p>
+                <p>No booked sessions yet. Find a mentor and book your first session!</p>
+                <Link to="/mentors"><button className="btn-primary" style={{ marginTop: '1rem', fontSize: '0.85rem' }}>Browse Mentors</button></Link>
               </div>
-            </div>
-          </div>
-
-          <div className="ds-section-card" style={{ marginTop: '1.5rem' }}>
-            <h3>Past Feedback</h3>
-            <div className="ds-empty-mini">
-              <p>No past sessions yet. Book a session to get personalized feedback!</p>
-            </div>
+            ) : (
+              <div className="ds-cards-grid" style={{ marginTop: '1rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
+                {bookings.map((b) => (
+                  <div key={b._id} className="ds-mentor-session-card" style={{ borderLeft: `4px solid ${b.mentorColor || '#6366f1'}` }}>
+                    <div className="ds-ms-header" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                      <div className="ds-list-avatar" style={{ background: `linear-gradient(135deg, ${b.mentorColor || '#6366f1'}, ${b.mentorColor || '#6366f1'}cc)`, color: 'white', width: 48, height: 48, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1rem', flexShrink: 0 }}>
+                        {b.mentorAvatar || 'EM'}
+                      </div>
+                      <div className="ds-ms-info" style={{ flex: 1 }}>
+                        <h4 style={{ margin: 0, fontSize: '1.05rem', color: 'var(--text)' }}>{b.sessionType || b.topic || '1:1 Mentoring'}</h4>
+                        <p style={{ margin: '0.25rem 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                          with <strong style={{ color: 'var(--text)' }}>{b.mentorName || 'Expert Mentor'}</strong>
+                        </p>
+                        <p style={{ margin: 0, fontSize: '0.8rem', color: b.mentorColor || '#6366f1' }}>{b.mentorRole || 'Industry Expert'}</p>
+                      </div>
+                      <span style={{ padding: '0.2rem 0.6rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 700, background: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
+                        {b.status || 'Confirmed'}
+                      </span>
+                    </div>
+                    <div className="ds-ms-details" style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border)', fontSize: '0.88rem', color: 'var(--text)' }}>
+                      <p style={{ margin: '0 0 0.4rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <strong>🗓 Date:</strong> {b.date}
+                      </p>
+                      <p style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <strong>⏰ Time:</strong> {b.timeSlot}
+                      </p>
+                      {b.topic && b.topic !== (b.sessionType || '') && (
+                        <p style={{ margin: '0.5rem 0 0', fontStyle: 'italic', color: 'var(--text-muted)' }}>
+                          "{b.topic}"
+                        </p>
+                      )}
+                    </div>
+                    <a
+                      href={b.meetingLink || 'https://meet.google.com/nexthire-live'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-primary"
+                      style={{ display: 'block', textAlign: 'center', width: '100%', marginTop: '1rem', background: b.mentorColor || '#6366f1', borderColor: b.mentorColor || '#6366f1', color: 'white', textDecoration: 'none', padding: '0.6rem', borderRadius: '8px', fontWeight: 600 }}
+                    >
+                      📹 Join Live Video Call
+                    </a>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}

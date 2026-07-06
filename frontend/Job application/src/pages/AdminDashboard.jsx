@@ -10,9 +10,11 @@ import {
   getAllCompanies,
   getAllJobs,
   getAllApplications,
+  getAllBookings,
   adminDeleteCandidate,
   adminDeleteJob,
   adminDeleteCompany,
+  adminDeleteBooking,
 } from '../services/api';
 import DashboardLayout from '../components/DashboardLayout';
 
@@ -30,6 +32,7 @@ const NAV_ITEMS = [
   { key: 'companies',    icon: '🏢', label: 'Companies' },
   { key: 'jobs',         icon: '💼', label: 'Jobs' },
   { key: 'applications', icon: '📋', label: 'Applications' },
+  { key: 'mentorships',  icon: '🤝', label: 'Mentorships' },
 ];
 
 const AdminDashboard = () => {
@@ -39,6 +42,7 @@ const AdminDashboard = () => {
   const [companies, setCompanies] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [applications, setApplications] = useState([]);
+  const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Pagination state
@@ -50,18 +54,20 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsRes, candidatesRes, companiesRes, jobsRes, appsRes] = await Promise.all([
+        const [statsRes, candidatesRes, companiesRes, jobsRes, appsRes, bookingsRes] = await Promise.all([
           getAdminStats(),
           getAllCandidates(),
           getAllCompanies(),
           getAllJobs(),
           getAllApplications(),
+          getAllBookings().catch(() => ({ data: [] })),
         ]);
         setStats(statsRes.data);
         setCandidates(candidatesRes.data);
         setCompanies(companiesRes.data);
         setJobs(jobsRes.data);
         setApplications(appsRes.data);
+        setBookings(bookingsRes.data || []);
       } catch {
         toast.error('Failed to load admin data');
       } finally {
@@ -70,6 +76,15 @@ const AdminDashboard = () => {
     };
     fetchData();
   }, []);
+
+  const handleDeleteBooking = async (id) => {
+    if (!window.confirm('Delete this mentorship booking?')) return;
+    try {
+      await adminDeleteBooking(id);
+      setBookings((prev) => prev.filter((b) => b._id !== id));
+      toast.success('Booking deleted');
+    } catch { toast.error('Failed to delete booking'); }
+  };
 
   const handleDeleteCandidate = async (id) => {
     if (!window.confirm('Delete this candidate?')) return;
@@ -182,6 +197,13 @@ const AdminDashboard = () => {
                 <div className="ds-stat-body">
                   <div className="ds-stat-num">{stats?.totalApplications}</div>
                   <div className="ds-stat-lbl">Applications</div>
+                </div>
+              </div>
+              <div className="ds-stat-card" style={{ '--accent': '#8b5cf6' }}>
+                <div className="ds-stat-icon" style={{ background: 'rgba(139,92,246,0.12)', color: '#8b5cf6' }}>🤝</div>
+                <div className="ds-stat-body">
+                  <div className="ds-stat-num">{stats?.totalBookings || bookings.length || 0}</div>
+                  <div className="ds-stat-lbl">Mentorships</div>
                 </div>
               </div>
             </div>
@@ -544,6 +566,96 @@ const AdminDashboard = () => {
           </div>
         );
       })()}
+
+      {/* ===== MENTORSHIPS TAB ===== */}
+      {tab === 'mentorships' && (
+        <div>
+          <div className="ds-page-title-row">
+            <h2>🤝 Mentorship Bookings</h2>
+            <span className="ds-count-badge">{bookings.length}</span>
+          </div>
+
+          <div className="ds-section-card">
+            {bookings.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                <p style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>📅</p>
+                <p>No mentorship sessions booked across the platform yet.</p>
+              </div>
+            ) : (
+              <div className="ds-table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Student</th>
+                      <th>Mentor</th>
+                      <th>Topic / Session</th>
+                      <th>Date & Time</th>
+                      <th>Status</th>
+                      <th>Meeting Link</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {bookings.map((b) => (
+                      <tr key={b._id}>
+                        <td>
+                          <strong>{b.studentId?.name || 'Unknown Student'}</strong>
+                          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{b.studentId?.email || ''}</div>
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span style={{ background: b.mentorColor || '#6366f1', color: 'white', padding: '0.2rem 0.5rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>
+                              {b.mentorAvatar || 'EM'}
+                            </span>
+                            <div>
+                              <strong>{b.mentorName || 'Expert Mentor'}</strong>
+                              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{b.mentorRole || ''}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <strong>{b.sessionType || '1:1 Mentoring'}</strong>
+                          {b.topic && b.topic !== (b.sessionType || '') && (
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>"{b.topic}"</div>
+                          )}
+                        </td>
+                        <td>
+                          <div><strong>{b.date}</strong></div>
+                          <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{b.timeSlot}</div>
+                        </td>
+                        <td>
+                          <span className="badge badge-reviewed" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
+                            ● {b.status || 'Confirmed'}
+                          </span>
+                        </td>
+                        <td>
+                          <a
+                            href={b.meetingLink || 'https://meet.google.com/nexthire-live'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: '#6366f1', fontWeight: 600, textDecoration: 'underline', fontSize: '0.85rem' }}
+                          >
+                            Join Meet ↗
+                          </a>
+                        </td>
+                        <td>
+                          <button
+                            className="btn-danger"
+                            style={{ padding: '0.35rem 0.65rem', fontSize: '0.8rem' }}
+                            onClick={() => handleDeleteBooking(b._id)}
+                          >
+                            🗑️ Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };

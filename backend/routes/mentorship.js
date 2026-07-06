@@ -18,16 +18,22 @@ router.get('/mentors', async (req, res) => {
 // Book a session
 router.post('/book', authMiddleware, async (req, res) => {
   try {
-    const { mentorId, date, timeSlot, topic } = req.body;
+    const { mentorId, mentorName, mentorRole, mentorAvatar, mentorColor, date, timeSlot, topic, sessionType } = req.body;
     const booking = await Booking.create({
       mentorId,
+      mentorName,
+      mentorRole,
+      mentorAvatar,
+      mentorColor,
       studentId: req.user.id,
       date,
       timeSlot,
-      topic
+      topic,
+      sessionType
     });
     res.status(201).json(booking);
   } catch (err) {
+    console.error('Booking creation error:', err);
     res.status(500).json({ message: err.message });
   }
 });
@@ -35,15 +41,17 @@ router.post('/book', authMiddleware, async (req, res) => {
 // Get my bookings (student or mentor)
 router.get('/my-bookings', authMiddleware, async (req, res) => {
   try {
-    const isMentor = (await User.findById(req.user.id)).isMentor;
+    const user = await User.findById(req.user.id);
+    const isMentor = user?.isMentor || false;
     let bookings;
     if (isMentor) {
-      bookings = await Booking.find({ mentorId: req.user.id }).populate('studentId', 'name email').sort({ date: 1 });
+      bookings = await Booking.find({ mentorId: req.user.id }).populate('studentId', 'name email').sort({ createdAt: -1 });
     } else {
-      bookings = await Booking.find({ studentId: req.user.id }).populate('mentorId', 'name email').sort({ date: 1 });
+      bookings = await Booking.find({ studentId: req.user.id }).sort({ createdAt: -1 });
     }
     res.json(bookings);
   } catch (err) {
+    console.error('Fetch bookings error:', err);
     res.status(500).json({ message: err.message });
   }
 });

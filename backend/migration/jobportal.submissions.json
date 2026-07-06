@@ -1,0 +1,195 @@
+[{
+  "_id": {
+    "$oid": "6a4357917d32c4b16502f90b"
+  },
+  "userId": null,
+  "language": "cpp",
+  "questionSlug": "two-sum",
+  "__v": 0,
+  "code": "class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n      int n= nums.size();\n      unordered_map<int,int> mp;\n      for(int i=0;i<n;i++){\n        int rem= target- nums[i];\n        if(mp.find(rem)!= mp.end()){\n          return {mp[rem],i};\n        }\n        mp[nums[i]] = i;\n      }\n      return {-1,-1};\n      \n    }\n};",
+  "memoryUsed": 1756,
+  "questionTitle": "Two Sum",
+  "status": "Accepted",
+  "timeTaken": "0.009s",
+  "updatedAt": {
+    "$date": "2026-07-02T05:25:45.751Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a435fe97d32c4b16502f90c"
+  },
+  "questionSlug": "remove-duplicates-from-sorted-array",
+  "language": "cpp",
+  "userId": null,
+  "__v": 0,
+  "code": "class Solution {\npublic:\n    int removeDuplicates(vector<int>& nums) {\n      int n= nums.size();\n      int s= 0;\n      for(int i=1;i<n;i++){\n        if(nums[s]!= nums[i]){\n          s++;\n          nums[s]= nums[i];\n        }\n        \n      }\n      return s+1;\n    }\n};",
+  "memoryUsed": 1128,
+  "questionTitle": "Remove Duplicates from Sorted Array",
+  "status": "Wrong Answer",
+  "timeTaken": "0.006s",
+  "updatedAt": {
+    "$date": "2026-06-30T06:26:59.018Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a43610f7d32c4b16502f90d"
+  },
+  "questionSlug": "missing-number",
+  "language": "cpp",
+  "userId": null,
+  "__v": 0,
+  "code": "class Solution {\npublic:\n    int missingNumber(vector<int>& nums) {\n      int n= nums.size();\n      int sum= 0;\n      int total= n*(n-1);\n      for(int i=0;i<nums.size();i++){\n        sum+= nums[i];\n\n      }\n      return total- sum;\n      \n    }\n};",
+  "memoryUsed": 1292,
+  "questionTitle": "Missing Number",
+  "status": "Accepted",
+  "timeTaken": "0.009s",
+  "updatedAt": {
+    "$date": "2026-06-30T06:27:30.543Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a43a0777d32c4b16502f90e"
+  },
+  "questionSlug": "missing-number",
+  "language": "cpp",
+  "userId": {
+    "$oid": "6a26644ec96561608abba2f3"
+  },
+  "__v": 0,
+  "code": "class Solution {\npublic:\n    int missingNumber(vector<int>& nums) {\n      int n= nums.size();\n      int sum= 0;\n      int total= n*(n-1);\n      for(int i=0;i<nums.size();i++){\n        sum+= nums[i];\n\n      }\n      return total- sum;\n      \n    }\n};",
+  "memoryUsed": 1208,
+  "questionTitle": "Missing Number",
+  "status": "Accepted",
+  "timeTaken": "0.011s",
+  "updatedAt": {
+    "$date": "2026-06-30T10:54:47.208Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a43a1f67d32c4b16502f90f"
+  },
+  "questionSlug": "majority-element",
+  "language": "cpp",
+  "userId": {
+    "$oid": "6a26644ec96561608abba2f3"
+  },
+  "__v": 0,
+  "code": "class Solution {\npublic:\n    int majorityElement(vector<int>& nums) {\n      int n= nums.size();\n      unordered_map<int,int>mp;\n      for(int num:nums){\n        mp[num]++;\n      }\n      for(auto it: mp){\n        if(it.second > n/2){\n          return  it.first;\n        }\n      }\n      return 0;\n      \n    }\n};",
+  "memoryUsed": 1352,
+  "questionTitle": "Majority Element",
+  "status": "Accepted",
+  "timeTaken": "0.006s",
+  "updatedAt": {
+    "$date": "2026-06-30T11:02:01.592Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a43a4da7d32c4b16502f910"
+  },
+  "questionSlug": "valid-anagram",
+  "language": "cpp",
+  "userId": {
+    "$oid": "6a26644ec96561608abba2f3"
+  },
+  "__v": 0,
+  "code": "class Solution {\npublic:\n    bool isAnagram(string s, string t) {\n      int n= s.length();\n      int m= t.length();\n      if(n!= m) return false;\n      unordered_map<char,int> mp;\n      for(int i=0;i<n;i++){\n        mp[s[i]]++;\n        mp[t[i]]--;\n        \n      }\n      for(auto it:mp){\n        if(it.second != 0){\n          return false;\n        }\n          \n        }\n        return true;\n      \n    }\n};",
+  "memoryUsed": 1384,
+  "questionTitle": "Valid Anagram",
+  "status": "Accepted",
+  "timeTaken": "0.006s",
+  "updatedAt": {
+    "$date": "2026-06-30T11:13:58.514Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a44ba897d32c4b16502f911"
+  },
+  "questionSlug": "best-time-to-buy-and-sell-stock",
+  "language": "cpp",
+  "userId": {
+    "$oid": "6a26644ec96561608abba2f3"
+  },
+  "__v": 0,
+  "code": "class Solution {\npublic:\n    int maxProfit(vector<int>& prices) {\n      int n= prices.size();\n      int start= prices[0];\n      int profit= 0;\n      for(int i=1;i<n;i++){\n        int currProfit=  prices[i]- start;\n        profit= max(profit,currProfit);\n        start= min(start,prices[i]);\n      }\n      return profit;\n    }\n};",
+  "memoryUsed": 984,
+  "questionTitle": "Best Time to Buy and Sell Stock",
+  "status": "Accepted",
+  "timeTaken": "0.005s",
+  "updatedAt": {
+    "$date": "2026-07-01T07:05:13.198Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a4786607d32c4b16502f912"
+  },
+  "questionSlug": "spiral-matrix",
+  "language": "cpp",
+  "userId": "6a26644ec96561608abba2f3",
+  "__v": 0,
+  "code": "class Solution {\npublic:\n    vector<int> spiralOrder(vector<vector<int>>& matrix) {\n        int m = matrix.size();\n        int n = matrix[0].size();\n\n        int top = 0;\n        int bottom = m - 1;\n        int l = 0;\n        int r = n - 1;\n\n        vector<int> ans;\n\n        while (top <= bottom && l <= r) {\n\n            // Top row\n            for (int i = l; i <= r; i++) {\n                ans.push_back(matrix[top][i]);\n            }\n            top++;\n\n            // Right column\n            for (int i = top; i <= bottom; i++) {\n                ans.push_back(matrix[i][r]);\n            }\n            r--;\n\n            // Bottom row\n            if (top <= bottom) {\n                for (int i = r; i >= l; i--) {\n                    ans.push_back(matrix[bottom][i]);\n                }\n                bottom--;\n            }\n\n            // Left column\n            if (l <= r) {\n                for (int i = bottom; i >= top; i--) {\n                    ans.push_back(matrix[i][l]);\n                }\n                l++;\n            }\n        }\n\n        return ans;\n    }\n};",
+  "memoryUsed": 1400,
+  "questionTitle": "Spiral Matrix",
+  "status": "Accepted",
+  "timeTaken": "0.005s",
+  "updatedAt": {
+    "$date": "2026-07-03T10:21:18.072Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a48a3bd7d32c4b16502f913"
+  },
+  "userId": "6a26644ec96561608abba2f3",
+  "language": "javascript",
+  "questionSlug": "maximum-product-subarray",
+  "__v": 0,
+  "code": "// Maximum Product Subarray\n// Pattern: Dynamic Programming\n// ──────────────────────────────────────────────\n\nfunction solve() {\n  // Write your solution here\n  \n}\n\nsolve();",
+  "memoryUsed": 52668,
+  "questionTitle": "Maximum Product Subarray",
+  "status": "Accepted",
+  "timeTaken": "1.114s",
+  "updatedAt": {
+    "$date": "2026-07-04T06:10:05.829Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a48a4797d32c4b16502f914"
+  },
+  "userId": "6a26644ec96561608abba2f3",
+  "language": "cpp",
+  "questionSlug": "two-sum",
+  "__v": 0,
+  "code": "class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        unordered_map<int, int> mp;\n\n        for (int i = 0; i < nums.size(); i++) {\n            int complement = target - nums[i];\n\n            if (mp.find(complement) != mp.end()) {\n                return {mp[complement], i};\n            }\n\n            mp[nums[i]] = i;\n        }\n\n        return {};\n    }\n};",
+  "memoryUsed": 1388,
+  "questionTitle": "Two Sum",
+  "status": "Accepted",
+  "timeTaken": "0.009s",
+  "updatedAt": {
+    "$date": "2026-07-04T06:36:31.328Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6a48cdee7d32c4b16502f915"
+  },
+  "userId": "6a26644ec96561608abba2f3",
+  "language": "cpp",
+  "questionSlug": "longest-common-prefix",
+  "__v": 0,
+  "code": "class Solution {\npublic:\n    string longestCommonPrefix(vector<string>& strs) {\n        sort(strs.begin(),strs.end());\n        int n= strs.size();\n        string s= strs[0];\n        string m= strs[n-1];\n        string ans= \"\";\n        for(int i=0;i< min(s.length(),m.length());i++){\n          if(s[i] !=m[i]){\n            return ans;\n          }\n          ans+= s[i];\n        }\n        return ans;\n    }\n};",
+  "memoryUsed": 1084,
+  "questionTitle": "Longest Common Prefix",
+  "status": "Wrong Answer",
+  "timeTaken": "0.006s",
+  "updatedAt": {
+    "$date": "2026-07-04T09:10:06.455Z"
+  }
+}]

@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
-import { bookMentorship } from '../services/api';
+import { bookMentorship, getMyBookings } from '../services/api';
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Static mentor catalogue
@@ -205,11 +205,19 @@ const BookingModal = ({ mentor, onClose, onSuccess }) => {
     }
     setSubmitting(true);
     try {
-      await bookMentorship({ mentorId: mentor.id, ...form }).catch(() => {});
+      await bookMentorship({
+        mentorId: mentor.id,
+        mentorName: mentor.name,
+        mentorRole: mentor.role,
+        mentorAvatar: mentor.initials,
+        mentorColor: mentor.color,
+        ...form
+      });
       toast.success(`✅ Session booked with ${mentor.name}!`);
       onSuccess();
       onClose();
-    } catch {
+    } catch (err) {
+      console.error('Booking error:', err);
       toast.error('Booking failed. Please try again.');
     } finally {
       setSubmitting(false);
@@ -290,9 +298,23 @@ const BookingModal = ({ mentor, onClose, onSuccess }) => {
 
 // ──────────────────────────────────────────────────────────────────────────────
 const Mentorship = () => {
+  const { user } = useAuth();
   const [filter, setFilter] = useState('All');
   const [bookingMentor, setBookingMentor] = useState(null);
   const [successCount, setSuccessCount] = useState(0);
+  const [bookings, setBookings] = useState([]);
+  const [loadingBookings, setLoadingBookings] = useState(false);
+  const [activeTab, setActiveTab] = useState('mentors'); // 'mentors' | 'bookings'
+
+  useEffect(() => {
+    if (user) {
+      setLoadingBookings(true);
+      getMyBookings()
+        .then((res) => setBookings(res.data || []))
+        .catch(() => {})
+        .finally(() => setLoadingBookings(false));
+    }
+  }, [user, successCount]);
 
   const filteredMentors = filter === 'All'
     ? MENTORS
@@ -320,10 +342,19 @@ const Mentorship = () => {
             <button
               className="cta-btn-primary"
               style={{ background: '#f59e0b', color: 'white' }}
-              onClick={() => document.getElementById('mentor-list').scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => { setActiveTab('mentors'); document.getElementById('mentor-list').scrollIntoView({ behavior: 'smooth' }); }}
             >
               Browse Mentors ↓
             </button>
+            {user && (
+              <button
+                className="cta-btn-primary"
+                style={{ background: 'var(--bg-secondary)', color: 'var(--text)', border: '1px solid var(--border)' }}
+                onClick={() => { setActiveTab('bookings'); document.getElementById('mentor-list').scrollIntoView({ behavior: 'smooth' }); }}
+              >
+                📅 My Booked Sessions ({bookings.length})
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -350,35 +381,151 @@ const Mentorship = () => {
         </div>
       </div>
 
-      {/* ── MENTOR LIST ──────────────────────────── */}
+      {/* ── MENTOR LIST / MY BOOKINGS ───────────── */}
       <div className="container" style={{ paddingBottom: '4rem' }} id="mentor-list">
-        <div className="academy-section-head">
-          <h2>Our Expert Mentors</h2>
-          <p>Handpicked professionals from top tech companies ready to guide you</p>
-        </div>
-
-        {/* Topic filter pills */}
-        <div className="academy-filter-row">
-          {TOPICS.map((t) => (
+        {/* Tab Switcher */}
+        <div style={{ display: 'flex', gap: '1.5rem', borderBottom: '2px solid var(--border)', marginBottom: '2.5rem' }}>
+          <button
+            onClick={() => setActiveTab('mentors')}
+            style={{
+              padding: '0.85rem 0.5rem',
+              fontSize: '1.1rem',
+              fontWeight: 700,
+              background: 'none',
+              border: 'none',
+              borderBottom: activeTab === 'mentors' ? '3px solid #f59e0b' : '3px solid transparent',
+              color: activeTab === 'mentors' ? '#f59e0b' : 'var(--text-muted)',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              marginBottom: '-2px'
+            }}
+          >
+            🤝 Browse Mentors
+          </button>
+          {user && (
             <button
-              key={t}
-              className={`category-pill ${filter === t ? 'academy-pill-active' : ''}`}
-              onClick={() => setFilter(t)}
+              onClick={() => setActiveTab('bookings')}
+              style={{
+                padding: '0.85rem 0.5rem',
+                fontSize: '1.1rem',
+                fontWeight: 700,
+                background: 'none',
+                border: 'none',
+                borderBottom: activeTab === 'bookings' ? '3px solid #f59e0b' : '3px solid transparent',
+                color: activeTab === 'bookings' ? '#f59e0b' : 'var(--text-muted)',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                marginBottom: '-2px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
             >
-              {t}
+              📅 My Booked Sessions
+              <span style={{ background: activeTab === 'bookings' ? '#f59e0b' : 'var(--border)', color: activeTab === 'bookings' ? 'white' : 'var(--text)', padding: '0.15rem 0.6rem', borderRadius: '999px', fontSize: '0.78rem' }}>
+                {bookings.length}
+              </span>
             </button>
-          ))}
+          )}
         </div>
 
-        <div className="mentor-grid">
-          {filteredMentors.map((mentor) => (
-            <MentorCard
-              key={mentor.id}
-              mentor={mentor}
-              onBook={setBookingMentor}
-            />
-          ))}
-        </div>
+        {activeTab === 'bookings' && user ? (
+          <div>
+            <div className="academy-section-head" style={{ textAlign: 'left', marginBottom: '2rem' }}>
+              <h2>My Mentorship Sessions</h2>
+              <p>Your confirmed 1:1 sessions, scheduled dates, and live video meeting links</p>
+            </div>
+
+            {loadingBookings ? (
+              <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>Loading your booked sessions...</div>
+            ) : bookings.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'var(--bg-secondary)', borderRadius: '16px', border: '1px dashed var(--border)' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📅</div>
+                <h3 style={{ marginBottom: '0.5rem' }}>No Booked Sessions Yet</h3>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>You haven't booked any 1:1 mentorship sessions yet.</p>
+                <button className="cta-btn-primary" style={{ background: '#f59e0b', color: 'white' }} onClick={() => setActiveTab('mentors')}>
+                  Browse Expert Mentors
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
+                {bookings.map((b) => (
+                  <div key={b._id} className="mentor-card" style={{ '--mentor-color': b.mentorColor || '#6366f1', '--mentor-bg': `${b.mentorColor || '#6366f1'}1f`, padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
+                    <div className="mentor-card-top" style={{ marginBottom: '1rem' }}>
+                      <div className="mentor-avatar" style={{ background: `linear-gradient(135deg, ${b.mentorColor || '#6366f1'}, ${b.mentorColor || '#6366f1'}cc)` }}>
+                        {b.mentorAvatar || 'EM'}
+                      </div>
+                      <div className="mentor-info">
+                        <h3 className="mentor-name">{b.mentorName || 'Expert Mentor'}</h3>
+                        <p className="mentor-role">{b.mentorRole || 'Industry Expert'}</p>
+                        <span style={{ display: 'inline-block', padding: '0.2rem 0.65rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 700, background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', marginTop: '0.35rem' }}>
+                          ● {b.status || 'Confirmed'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{ background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '12px', marginBottom: '1.25rem', fontSize: '0.9rem', flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', color: 'var(--text)' }}>
+                        <strong>🗓 Date:</strong> {b.date}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', color: 'var(--text)' }}>
+                        <strong>⏰ Time:</strong> {b.timeSlot}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text)' }}>
+                        <strong>💡 Topic:</strong> {b.sessionType || b.topic}
+                      </div>
+                      {b.topic && b.topic !== (b.sessionType || '') && (
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border)', fontStyle: 'italic' }}>
+                          Note: "{b.topic}"
+                        </div>
+                      )}
+                    </div>
+
+                    <a
+                      href={b.meetingLink || 'https://meet.google.com/nexthire-live'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-primary"
+                      style={{ display: 'block', textAlign: 'center', background: b.mentorColor || '#6366f1', color: 'white', padding: '0.75rem', borderRadius: '10px', fontWeight: 700, textDecoration: 'none' }}
+                    >
+                      📹 Join Live Video Call
+                    </a>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
+            <div className="academy-section-head">
+              <h2>Our Expert Mentors</h2>
+              <p>Handpicked professionals from top tech companies ready to guide you</p>
+            </div>
+
+            {/* Topic filter pills */}
+            <div className="academy-filter-row">
+              {TOPICS.map((t) => (
+                <button
+                  key={t}
+                  className={`category-pill ${filter === t ? 'academy-pill-active' : ''}`}
+                  onClick={() => setFilter(t)}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+
+            <div className="mentor-grid">
+              {filteredMentors.map((mentor) => (
+                <MentorCard
+                  key={mentor.id}
+                  mentor={mentor}
+                  onBook={setBookingMentor}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* ── TESTIMONIALS ─────────────────────────── */}

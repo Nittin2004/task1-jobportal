@@ -3,6 +3,7 @@ const User = require('../models/User');
 const Company = require('../models/Company');
 const Job = require('../models/Job');
 const Application = require('../models/Application');
+const Booking = require('../models/Booking');
 const { adminMiddleware } = require('../middleware/auth');
 
 const router = express.Router();
@@ -15,8 +16,9 @@ router.get('/stats', adminMiddleware, async (req, res) => {
     const totalJobs = await Job.countDocuments();
     const totalApplications = await Application.countDocuments();
     const activeJobs = await Job.countDocuments({ isActive: true });
+    const totalBookings = await Booking.countDocuments();
 
-    res.json({ totalCandidates, totalCompanies, totalJobs, totalApplications, activeJobs });
+    res.json({ totalCandidates, totalCompanies, totalJobs, totalApplications, activeJobs, totalBookings });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -119,6 +121,26 @@ router.delete('/jobs/:id', adminMiddleware, async (req, res) => {
   try {
     await Job.findByIdAndDelete(req.params.id);
     res.json({ message: 'Job deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get all mentorship bookings
+router.get('/bookings', adminMiddleware, async (req, res) => {
+  try {
+    const bookings = await Booking.find().populate('studentId', 'name email').sort({ createdAt: -1 });
+    res.json(bookings);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Delete a booking
+router.delete('/bookings/:id', adminMiddleware, async (req, res) => {
+  try {
+    await Booking.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Booking deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

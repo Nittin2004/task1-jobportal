@@ -1,0 +1,88 @@
+[{
+  "_id": {
+    "$oid": "6a2412fa682e8e91a1df02a2"
+  },
+  "name": "Nittin",
+  "email": "Nit45@gmail.com",
+  "password": "$2b$10$YegX5Njfjd0wEYUIbK4U5.b9V6Esv9r.i2VZUbCraLUxuiK6L8gzi",
+  "phone": "9898989898",
+  "skills": [],
+  "experience": "",
+  "education": "",
+  "resumeUrl": "/uploads/1780812863481-reerer-(17).pdf",
+  "role": "candidate",
+  "createdAt": {
+    "$date": "2026-06-06T12:30:50.343Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-07T06:14:23.511Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a265c2ce90a83ee4eff903d"
+  },
+  "name": "Rahul Sharma",
+  "email": "rah123@gmail.com",
+  "password": "$2b$10$p7jmdrLFu.LP.uDejVcH9Op5xqSS7kiahgXz9ggs/xMnTFIvmiEtq",
+  "phone": "9898989898",
+  "skills": [],
+  "experience": "",
+  "education": "",
+  "resumeUrl": "/uploads/1780900799379-Nittin.Software-Developer.pdf",
+  "role": "candidate",
+  "createdAt": {
+    "$date": "2026-06-08T06:07:40.375Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T06:39:59.383Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a26644ec96561608abba2f3"
+  },
+  "name": "Sanjay sharma",
+  "email": "san123@gmail.com",
+  "password": "$2b$10$xW7mXzGA4AG7Cf.uc38AJeud1/GFN6hdDKt0sjObEK1IGO8yrKNKO",
+  "phone": "9898989898",
+  "skills": [
+    "MERN"
+  ],
+  "experience": "2 year",
+  "education": "b tech",
+  "resumeUrl": "/uploads/1781922845986-Nittin-Full-Stack-developer-(2).pdf",
+  "role": "candidate",
+  "createdAt": {
+    "$date": "2026-06-08T06:42:22.364Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-22T06:36:54.114Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a2bc7faf5c3ad2636c21e55"
+  },
+  "name": "Nittin Sharma",
+  "email": "nittin@gmail.com",
+  "password": "$2b$10$wU2iheiG1.3kP5l7tuQ1/u6EJvGp5P5HqpE3r9ITsXVtDIqlDre92",
+  "phone": "9797925921",
+  "skills": [
+    "mern"
+  ],
+  "experience": "1 year",
+  "education": "b tech",
+  "resumeUrl": "/uploads/1781254204419-Nittin-Full-Stack-developer-(2).pdf",
+  "role": "candidate",
+  "createdAt": {
+    "$date": "2026-06-12T08:48:58.459Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-13T08:07:30.723Z"
+  },
+  "__v": 0
+}]

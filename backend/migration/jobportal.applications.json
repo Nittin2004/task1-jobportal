@@ -1,0 +1,422 @@
+[{
+  "_id": {
+    "$oid": "6a1ff8b5505f25293772dbea"
+  },
+  "job": {
+    "$oid": "6a1ff812505f25293772dbe7"
+  },
+  "candidate": {
+    "$oid": "6a1ff85c505f25293772dbe8"
+  },
+  "coverLetter": "r3e3",
+  "resumeUrl": "/uploads/1780480174414-Nittin-Full-Stack-DEveloper.pdf",
+  "status": "Pending",
+  "createdAt": {
+    "$date": "2026-06-03T09:49:41.266Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-03T09:49:41.266Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a211e6e89ed1ba5e4e4a525"
+  },
+  "job": {
+    "$oid": "6a21192389ed1ba5e4e4a523"
+  },
+  "candidate": {
+    "$oid": "6a211d7e89ed1ba5e4e4a524"
+  },
+  "coverLetter": "i have 2 year  of experience in frontend development ",
+  "resumeUrl": "/uploads/1780555371694-Nittin-Full-Stack-DEveloper.pdf",
+  "status": "Pending",
+  "createdAt": {
+    "$date": "2026-06-04T06:42:54.477Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-06T06:20:58.063Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a22c545dca8ac205bc4b06e"
+  },
+  "job": {
+    "$oid": "6a21441089ed1ba5e4e4a527"
+  },
+  "candidate": {
+    "$oid": "6a21207d89ed1ba5e4e4a526"
+  },
+  "coverLetter": "",
+  "resumeUrl": "/uploads/1780663614919-Nittin.Software-Developer.pdf",
+  "status": "Shortlisted",
+  "createdAt": {
+    "$date": "2026-06-05T12:47:01.944Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-06T06:56:28.428Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a22c6e8dca8ac205bc4b06f"
+  },
+  "job": {
+    "$oid": "6a1ff812505f25293772dbe7"
+  },
+  "candidate": {
+    "$oid": "6a21207d89ed1ba5e4e4a526"
+  },
+  "coverLetter": "",
+  "resumeUrl": "/uploads/1780664031645-reerer-(17).pdf",
+  "status": "Pending",
+  "createdAt": {
+    "$date": "2026-06-05T12:54:00.854Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-05T12:54:00.854Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a23ceaadcee6d1444d6f361"
+  },
+  "job": {
+    "$oid": "6a23ba93141cdc6cc3901ef1"
+  },
+  "candidate": {
+    "$oid": "6a23ce75dcee6d1444d6f35f"
+  },
+  "jobTitle": "Go lang backend developer",
+  "companyName": "Geocon",
+  "candidateName": "Rohit",
+  "candidateEmail": "ro123@gmail.com",
+  "candidatePhone": "9898989898",
+  "coverLetter": "",
+  "resumeUrl": "/uploads/1780731560949-Nittin.Software-Developer.pdf",
+  "status": "Shortlisted",
+  "createdAt": {
+    "$date": "2026-06-06T07:39:22.887Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-06T07:44:12.835Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a23d2afa0a1405e184ac051"
+  },
+  "job": {
+    "$oid": "6a1ff812505f25293772dbe7"
+  },
+  "candidate": {
+    "$oid": "6a23d265a0a1405e184ac050"
+  },
+  "jobTitle": "React developer",
+  "companyName": "Rohit",
+  "candidateName": "Rohit",
+  "candidateEmail": "ro123@gmail.com",
+  "candidatePhone": "9898989898",
+  "coverLetter": "",
+  "resumeUrl": "/uploads/1780732589585-reerer-(17).pdf",
+  "status": "Pending",
+  "createdAt": {
+    "$date": "2026-06-06T07:56:31.607Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-06T07:56:31.607Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a23da65a0a1405e184ac055"
+  },
+  "job": {
+    "$oid": "6a23d422a0a1405e184ac054"
+  },
+  "candidate": {
+    "$oid": "6a23d265a0a1405e184ac050"
+  },
+  "jobTitle": "Frontend Developer",
+  "companyName": "Geocon Semiconductor LLp",
+  "candidateName": "Rohit",
+  "candidateEmail": "ro123@gmail.com",
+  "candidatePhone": "9898989898",
+  "coverLetter": "",
+  "resumeUrl": "/uploads/1780734562945-reerer-(17).pdf",
+  "status": "Hired",
+  "createdAt": {
+    "$date": "2026-06-06T08:29:25.872Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-10T11:06:25.636Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a241323682e8e91a1df02a3"
+  },
+  "job": {
+    "$oid": "6a23d3a2a0a1405e184ac053"
+  },
+  "candidate": {
+    "$oid": "6a2412fa682e8e91a1df02a2"
+  },
+  "jobTitle": "Backend Developer",
+  "companyName": "Geocon Semiconductor LLp",
+  "candidateName": "Nittin",
+  "candidateEmail": "Nit45@gmail.com",
+  "candidatePhone": "9898989898",
+  "coverLetter": "",
+  "resumeUrl": "/uploads/1780749069930-reerer-(17).pdf",
+  "status": "Shortlisted",
+  "createdAt": {
+    "$date": "2026-06-06T12:31:31.515Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-06T12:33:05.867Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a250c42c3940ce23caba3a3"
+  },
+  "job": {
+    "$oid": "6a1ff812505f25293772dbe7"
+  },
+  "candidate": {
+    "$oid": "6a2412fa682e8e91a1df02a2"
+  },
+  "jobTitle": "React developer",
+  "companyName": "Rohit",
+  "candidateName": "Nittin",
+  "candidateEmail": "Nit45@gmail.com",
+  "candidatePhone": "9898989898",
+  "coverLetter": "",
+  "resumeUrl": "/uploads/1780812863481-reerer-(17).pdf",
+  "status": "Pending",
+  "createdAt": {
+    "$date": "2026-06-07T06:14:26.214Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-07T06:14:26.214Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a265c4ae90a83ee4eff903f"
+  },
+  "job": {
+    "$oid": "6a23d422a0a1405e184ac054"
+  },
+  "candidate": {
+    "$oid": "6a265c2ce90a83ee4eff903d"
+  },
+  "jobTitle": "Frontend Developer",
+  "companyName": "Geocon Semiconductor LLp",
+  "candidateName": "Rahul Sharma",
+  "candidateEmail": "rah123@gmail.com",
+  "candidatePhone": "9898989898",
+  "coverLetter": "",
+  "resumeUrl": "/uploads/1780898888822-reerer-(17).pdf",
+  "status": "Rejected",
+  "createdAt": {
+    "$date": "2026-06-08T06:08:10.900Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-13T09:02:03.891Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a266179e90a83ee4eff9042"
+  },
+  "job": {
+    "$oid": "6a23d3a2a0a1405e184ac053"
+  },
+  "candidate": {
+    "$oid": "6a265c2ce90a83ee4eff903d"
+  },
+  "jobTitle": "Backend Developer",
+  "companyName": "Geocon Semiconductor LLp",
+  "candidateName": "Rahul Sharma",
+  "candidateEmail": "rah123@gmail.com",
+  "candidatePhone": "9898989898",
+  "coverLetter": "",
+  "resumeUrl": "/uploads/1780900216070-Nittin.Software-Developer.pdf",
+  "status": "Rejected",
+  "createdAt": {
+    "$date": "2026-06-08T06:30:17.701Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-10T10:55:14.725Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a2662b8e90a83ee4eff9043"
+  },
+  "job": {
+    "$oid": "6a1ff812505f25293772dbe7"
+  },
+  "candidate": {
+    "$oid": "6a265c2ce90a83ee4eff903d"
+  },
+  "jobTitle": "React developer",
+  "companyName": "Rohit",
+  "candidateName": "Rahul Sharma",
+  "candidateEmail": "rah123@gmail.com",
+  "candidatePhone": "9898989898",
+  "coverLetter": "",
+  "resumeUrl": "/uploads/1780900534169-Nittin-Full-Stack-DEveloper.pdf",
+  "status": "Pending",
+  "createdAt": {
+    "$date": "2026-06-08T06:35:36.540Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T06:35:36.540Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a2663c1e90a83ee4eff9044"
+  },
+  "job": {
+    "$oid": "6a265d20e90a83ee4eff9040"
+  },
+  "candidate": {
+    "$oid": "6a265c2ce90a83ee4eff903d"
+  },
+  "jobTitle": "Go lang developer",
+  "companyName": "Geocon Semiconductor LLp",
+  "candidateName": "Rahul Sharma",
+  "candidateEmail": "rah123@gmail.com",
+  "candidatePhone": "9898989898",
+  "coverLetter": "",
+  "resumeUrl": "/uploads/1780900799379-Nittin.Software-Developer.pdf",
+  "status": "Rejected",
+  "createdAt": {
+    "$date": "2026-06-08T06:40:01.010Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-20T02:36:07.285Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a266469c96561608abba2f5"
+  },
+  "job": {
+    "$oid": "6a265d20e90a83ee4eff9040"
+  },
+  "candidate": {
+    "$oid": "6a26644ec96561608abba2f3"
+  },
+  "jobTitle": "Go lang developer",
+  "companyName": "Geocon Semiconductor LLp",
+  "candidateName": "Sanjay sharma",
+  "candidateEmail": "san123@gmail.com",
+  "candidatePhone": "9898989898",
+  "coverLetter": "",
+  "resumeUrl": "/uploads/1780900967379-Nittin-Full-Stack-DEveloper.pdf",
+  "status": "Rejected",
+  "createdAt": {
+    "$date": "2026-06-08T06:42:49.203Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-20T02:36:12.055Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a2a588ae10caeeb2ecfd8f5"
+  },
+  "job": {
+    "$oid": "6a1ff812505f25293772dbe7"
+  },
+  "candidate": {
+    "$oid": "6a26644ec96561608abba2f3"
+  },
+  "jobTitle": "React developer",
+  "companyName": "Rohit",
+  "candidateName": "Sanjay sharma",
+  "candidateEmail": "san123@gmail.com",
+  "candidatePhone": "9898989898",
+  "coverLetter": "",
+  "resumeUrl": "/uploads/1781160072299-Nittin-Full-Stack-developer-(2).pdf",
+  "status": "Pending",
+  "createdAt": {
+    "$date": "2026-06-11T06:41:14.395Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-11T06:41:14.395Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a2bc83ef5c3ad2636c21e57"
+  },
+  "job": {
+    "$oid": "6a265d20e90a83ee4eff9040"
+  },
+  "candidate": {
+    "$oid": "6a2bc7faf5c3ad2636c21e55"
+  },
+  "jobTitle": "Go lang developer",
+  "companyName": "Geocon Semiconductor LLp",
+  "candidateName": "Nittin Sharma",
+  "candidateEmail": "nittin@gmail.com",
+  "candidatePhone": "9797925921",
+  "coverLetter": "",
+  "resumeUrl": "/uploads/1781254204419-Nittin-Full-Stack-developer-(2).pdf",
+  "status": "Reviewed",
+  "createdAt": {
+    "$date": "2026-06-12T08:50:06.755Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-13T09:03:18.583Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a2fe91cca5b4a1ed32bb24d"
+  },
+  "job": {
+    "$oid": "6a2941f1311dddbbe2e50133"
+  },
+  "candidate": {
+    "$oid": "6a26644ec96561608abba2f3"
+  },
+  "jobTitle": "Data Analyst",
+  "companyName": "Geocon Semiconductor LLp",
+  "candidateName": "Sanjay sharma",
+  "candidateEmail": "san123@gmail.com",
+  "candidatePhone": "9898989898",
+  "coverLetter": "",
+  "resumeUrl": "/uploads/1781524761257-Nittin-Full-Stack-developer-(2).pdf",
+  "status": "Shortlisted",
+  "createdAt": {
+    "$date": "2026-06-15T11:59:24.418Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-20T02:35:06.238Z"
+  },
+  "__v": 0
+}]

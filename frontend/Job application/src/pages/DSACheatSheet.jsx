@@ -1306,6 +1306,14 @@ const DSACheatSheet = ({ embedded }) => {
   const [userProfile, setUserProfile] = useState(null);
   const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
   const [isLightMode, setIsLightMode]   = useState(false);
+  const [mobilePanel, setMobilePanel]   = useState('problem'); // 'problem' | 'compiler'
+  const [isMobile, setIsMobile]         = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     getProfile().then(res => setUserProfile(res.data)).catch(() => {});
@@ -1495,6 +1503,35 @@ const DSACheatSheet = ({ embedded }) => {
     --dsa-text: #0f172a;
     --dsa-text-muted: #64748b;
   }
+  /* Mobile split-panel grid: 2-col on desktop, single-col on mobile */
+  .dsa2-split-panel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+  }
+  @media (max-width: 768px) {
+    .dsa2-split-panel-grid {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+    }
+    .dsa2-split-panel-problem {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+    }
+    .dsa2-split-panel-compiler {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+    }
+  }
               `}</style>
               <div className={isLightMode ? 'dsa-theme-light' : 'dsa-theme-dark'} style={{
                 position: 'fixed', inset: 0, zIndex: 9999,
@@ -1503,59 +1540,72 @@ const DSACheatSheet = ({ embedded }) => {
                 fontFamily: 'Inter, sans-serif',
               }}>
               {/* ── Topbar ── */}
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '1rem',
-                padding: '0 1.25rem', height: '48px', flexShrink: 0,
-                background: 'var(--dsa-bg-secondary)', borderBottom: '1px solid var(--dsa-border)',
-              }}>
+              <div className="dsa2-overlay-topbar">
                 <button
                   onClick={() => setSelectedQ(null)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: '0.4rem',
                     background: 'none', border: '1px solid var(--dsa-border)', color: 'var(--dsa-text-muted)',
-                    padding: '0.3rem 0.8rem', borderRadius: '6px', cursor: 'pointer',
+                    padding: '0.3rem 0.7rem', borderRadius: '6px', cursor: 'pointer',
                     fontSize: '0.8rem', fontWeight: 600, transition: 'all 0.15s',
+                    flexShrink: 0, whiteSpace: 'nowrap',
                   }}
-                  onMouseEnter={e => { e.target.style.color='var(--dsa-text)'; e.target.style.borderColor='var(--dsa-text-muted)'; }}
-                  onMouseLeave={e => { e.target.style.color='var(--dsa-text-muted)'; e.target.style.borderColor='var(--dsa-border)'; }}
                 >
-                  ← Back
+                  ← <span className="dsa2-back-btn-text">Back</span>
                 </button>
-                <span style={{ color: 'var(--dsa-text-muted)', fontSize: '0.8rem' }}>
-                  {selectedQ.topic}
-                </span>
-                <span style={{ color: 'var(--dsa-border)' }}>/</span>
-                <span style={{ color: 'var(--dsa-text)', fontSize: '0.82rem', fontWeight: 600 }}>
-                  {selectedQ.no}. {selectedQ.title}
-                </span>
-                <DiffBadge d={selectedQ.difficulty} />
+                <div className="dsa2-topbar-title">
+                  <span style={{ color: 'var(--dsa-text-muted)', fontSize: '0.78rem', flexShrink: 0 }}>
+                    {selectedQ.topic}
+                  </span>
+                  <span style={{ color: 'var(--dsa-border)', flexShrink: 0 }}>/</span>
+                  <span style={{ color: 'var(--dsa-text)', fontSize: '0.82rem', fontWeight: 600 }}>
+                    {selectedQ.no}. {selectedQ.title}
+                  </span>
+                  <DiffBadge d={selectedQ.difficulty} />
+                </div>
                 <button
+                  className="dsa2-theme-toggle-btn"
                   onClick={() => setIsLightMode(!isLightMode)}
                   style={{
-                    marginLeft: 'auto',
                     display: 'flex', alignItems: 'center', gap: '0.4rem',
                     background: 'none', border: '1px solid var(--dsa-border)', color: 'var(--dsa-text-muted)',
-                    padding: '0.3rem 0.8rem', borderRadius: '6px', cursor: 'pointer',
+                    padding: '0.3rem 0.7rem', borderRadius: '6px', cursor: 'pointer',
                     fontSize: '0.8rem', fontWeight: 600, transition: 'all 0.15s',
+                    flexShrink: 0, whiteSpace: 'nowrap',
                   }}
-                  onMouseEnter={e => { e.target.style.color='var(--dsa-text)'; e.target.style.borderColor='var(--dsa-text-muted)'; }}
-                  onMouseLeave={e => { e.target.style.color='var(--dsa-text-muted)'; e.target.style.borderColor='var(--dsa-border)'; }}
                 >
-                  {isLightMode ? '🌙 Dark Mode' : '☀️ Light Mode'}
+                  {isLightMode ? '🌙' : '☀️'} <span style={{ display: isMobile ? 'none' : 'inline' }}>{isLightMode ? 'Dark' : 'Light'}</span>
                 </button>
-
               </div>
 
-              {/* ── Two-panel split ── */}
-              <div style={{
-                display: 'grid', gridTemplateColumns: '1fr 1fr',
-                flex: 1, overflow: 'hidden', minHeight: 0,
-              }}>
-                {/* Left: Problem — scrolls independently */}
-                <div style={{
-                  overflowY: 'auto', borderRight: '1px solid var(--dsa-border)',
-                  background: 'var(--dsa-bg-primary)',
-                }}>
+              {/* ── Mobile Tab Switcher (Problem | Code Editor) ── */}
+              <div className="dsa2-mobile-tabs">
+                <button
+                  className={`dsa2-mobile-tab-btn ${mobilePanel === 'problem' ? 'active' : ''}`}
+                  onClick={() => setMobilePanel('problem')}
+                >
+                  📋 Problem
+                </button>
+                <button
+                  className={`dsa2-mobile-tab-btn ${mobilePanel === 'compiler' ? 'active' : ''}`}
+                  onClick={() => setMobilePanel('compiler')}
+                >
+                  &lt;/&gt; Code Editor
+                </button>
+              </div>
+
+              {/* ── Two-panel split (desktop: side-by-side | mobile: tab-based) ── */}
+              <div className="dsa2-split-panel-grid">
+                {/* Left / Problem panel */}
+                <div
+                  className="dsa2-split-panel-problem"
+                  style={{
+                    overflowY: 'auto',
+                    borderRight: isMobile ? 'none' : '1px solid var(--dsa-border)',
+                    background: 'var(--dsa-bg-primary)',
+                    display: isMobile && mobilePanel !== 'problem' ? 'none' : undefined,
+                  }}
+                >
                   <ProblemPanel
                     question={selectedQ}
                     solved={!!solved[selectedQ.id]}
@@ -1566,11 +1616,15 @@ const DSACheatSheet = ({ embedded }) => {
                     onNote={saveNote}
                   />
                 </div>
-                {/* Right: Compiler — internally resizable */}
-                <div style={{
-                  overflow: 'hidden', background: 'var(--dsa-bg-primary)',
-                  display: 'flex', flexDirection: 'column',
-                }}>
+                {/* Right / Compiler panel */}
+                <div
+                  className="dsa2-split-panel-compiler"
+                  style={{
+                    overflow: 'hidden', background: 'var(--dsa-bg-primary)',
+                    display: isMobile && mobilePanel !== 'compiler' ? 'none' : 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
                   <CompilerPanel question={selectedQ} userProfile={userProfile} />
                 </div>
               </div>
@@ -1662,6 +1716,7 @@ const DSACheatSheet = ({ embedded }) => {
                               onClick={() => {
                                 if (isLocked) { setIsPremiumModalOpen(true); return; }
                                 setSelectedQ(q);
+                                setMobilePanel('problem');
                               }}
                             >
                               <td className="dsa2-num">{q.no}</td>

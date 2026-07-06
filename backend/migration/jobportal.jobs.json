@@ -1,0 +1,156 @@
+[{
+  "_id": {
+    "$oid": "6a1ff812505f25293772dbe7"
+  },
+  "title": "React developer",
+  "description": "Looking for the software developer with hands on experinece ",
+  "requirements": "react,git,github",
+  "location": "Noida",
+  "salary": "5-7",
+  "jobType": "Full-time",
+  "category": "Tech",
+  "company": {
+    "$oid": "6a1ff7c5505f25293772dbe6"
+  },
+  "isActive": true,
+  "deadline": {
+    "$date": "2026-06-12T00:00:00.000Z"
+  },
+  "createdAt": {
+    "$date": "2026-06-03T09:46:58.055Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-03T09:46:58.055Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a23d3a2a0a1405e184ac053"
+  },
+  "title": "Backend Developer",
+  "description": "About the Role\n\nWe are looking for a skilled Backend Developer to join our development team. The ideal candidate will be responsible for designing, developing, and maintaining scalable server-side applications, APIs, and databases. You will work closely with frontend developers, product managers, and other stakeholders to deliver high-quality software solutions.",
+  "requirements": "Required Skills & Qualifications\nBachelor's degree in Computer Science, Information Technology, or a related field.\n1–4 years of experience in backend development (Freshers with strong projects may also apply).\nStrong knowledge of Node.js and Express.js.\nExperience with REST APIs and API integration.\nProficiency in JavaScript/TypeScript.\nExperience with MongoDB, MySQL, or PostgreSQL.\nUnderstanding of JWT Authentication, OAuth, and security practices.\nFamiliarity with Git and version control systems.\nKnowledge of asynchronous programming and event-driven architecture.\nStrong problem-solving and debugging skills.",
+  "location": "Noida 63",
+  "salary": "3-5",
+  "jobType": "Internship",
+  "category": "Technology",
+  "company": {
+    "$oid": "6a23d2fca0a1405e184ac052"
+  },
+  "isActive": true,
+  "deadline": {
+    "$date": "2026-06-07T00:00:00.000Z"
+  },
+  "createdAt": {
+    "$date": "2026-06-06T08:00:34.170Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-06T08:00:34.170Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a23d422a0a1405e184ac054"
+  },
+  "title": "Frontend Developer",
+  "description": "Position: Frontend Developer\nAbout the Role\n\nWe are looking for a talented Frontend Developer to create responsive, user-friendly, and high-performance web applications. The ideal candidate should have strong experience in modern JavaScript frameworks, UI development, and frontend best practices. You will work closely with designers, backend developers, and product teams to deliver exceptional user experiences.",
+  "requirements": "Develop responsive and interactive web applications.\nConvert UI/UX designs into clean, reusable, and maintainable code.\nBuild reusable components and frontend libraries.\nIntegrate frontend applications with RESTful APIs.\nOptimize applications for maximum speed and scalability.\nEnsure cross-browser and cross-device compatibility.\nCollaborate with backend developers to integrate APIs and services.\nDebug and resolve frontend issues efficiently.\nWrite clean, well-documented, and testable code.\nParticipate in code reviews and team discussions",
+  "location": "Noida 63",
+  "salary": "3-5",
+  "jobType": "Full-time",
+  "category": "Technology",
+  "company": {
+    "$oid": "6a23d2fca0a1405e184ac052"
+  },
+  "isActive": true,
+  "deadline": {
+    "$date": "2026-06-07T00:00:00.000Z"
+  },
+  "createdAt": {
+    "$date": "2026-06-06T08:02:42.382Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-06T08:02:42.382Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a265d20e90a83ee4eff9040"
+  },
+  "title": "Go lang developer",
+  "description": "Go (Golang) Developer – Job Description\nPosition: Go (Golang) Developer\n\nWe are looking for a skilled Go (Golang) Developer to join our engineering team. The ideal candidate will be responsible for designing, developing, and maintaining scalable backend services, APIs, and microservices. You will collaborate with cross-functional teams to build high-performance applications and contribute to the entire software development lifecycle.\n\nResponsibilities\nDesign, develop, test, and maintain backend applications using Go (Golang).\nBuild and optimize RESTful APIs and microservices.\nWrite clean, efficient, and reusable code following best practices.\nIntegrate applications with databases, third-party APIs, and cloud services.\nTroubleshoot, debug, and enhance existing applications.\nCollaborate with frontend developers, product managers, and QA teams.\nParticipate in code reviews and technical discussions.\nEnsure application performance, security, and scalability.\nCreate and maintain technical documentation.",
+  "requirements": "Role: Go (Golang) Developer\n\nExperience: 1–4 Years\n\nSkills Required:\n\nGo (Golang)\nREST APIs\nMicroservices\nMySQL/PostgreSQL\nMongoDB\nGit\nDocker\nJWT Authentication\n\nResponsibilities:\n\nDevelop and maintain backend services in Go.\nBuild scalable APIs and microservices.\nOptimize application performance and database queries.\nCollaborate with cross-functional teams.\nEnsure code quality through testing and reviews.\n\nLocation: Remote / On-site\nEmployment Type: Full-time",
+  "location": "Noida sector 135",
+  "salary": "3-5",
+  "jobType": "Internship",
+  "category": "Technology",
+  "company": {
+    "$oid": "6a23d2fca0a1405e184ac052"
+  },
+  "isActive": true,
+  "deadline": {
+    "$date": "2026-06-10T00:00:00.000Z"
+  },
+  "createdAt": {
+    "$date": "2026-06-08T06:11:44.709Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T06:11:44.709Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a2941f1311dddbbe2e50133"
+  },
+  "title": "Data Analyst",
+  "description": "Data Analyst – Job Description\n\nWe are looking for a Data Analyst to collect, process, and analyze data to help drive business decisions. The candidate will create reports, dashboards, and insights that support organizational growth and performance.",
+  "requirements": "Bachelor's degree in Computer Science, IT, Statistics, Mathematics, or a related field.\nStrong knowledge of SQL and databases.\nExperience with Excel, Power BI, or Tableau.\nBasic knowledge of Python or R for data analysis.\nGood analytical and problem-solving skills.\nAbility to interpret data and present insights clearly.\nStrong communication and teamwork skills.\nPreferred Skills\nData visualization and reporting.\nStatistical analysis.\nData cleaning and preprocessing.\nUnderstanding of business metrics and KPIs.",
+  "location": "Mumbai",
+  "salary": "3",
+  "jobType": "Full-time",
+  "category": "technology",
+  "company": {
+    "$oid": "6a23d2fca0a1405e184ac052"
+  },
+  "isActive": true,
+  "deadline": {
+    "$date": "2026-06-11T00:00:00.000Z"
+  },
+  "createdAt": {
+    "$date": "2026-06-10T10:52:33.709Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-10T10:52:33.709Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a3e490158efb8405d43d0c3"
+  },
+  "title": "Software Engineer",
+  "description": "Job Description:\nDesign, develop, test, and maintain scalable software applications while collaborating with cross-functional teams to deliver high-quality solutions.\n\nKey Responsibilities:\n\nDevelop and maintain web applications and APIs.\nWrite clean, efficient, and reusable code.\nDebug, test, and optimize application performance.\nCollaborate with developers, QA, and product teams.\nWork with databases and version control (Git).\nParticipate in code reviews and follow best coding practices.\nSupport application deployment and maintenance.",
+  "requirements": "Requirements\nStrong problem-solving and analytical skills.\nKnowledge of the Software Development Life Cycle (SDLC).\nUnderstanding of Object-Oriented Programming (OOP).\nFamiliarity with REST APIs, databases, and version control (Git).\nAbility to work in a collaborative Agile environment.\nSkills\nC++, Java, JavaScript\nHTML, CSS, React.js, Next.js\nNode.js, Express.js\nMongoDB, MySQL\nGit, GitHub, Docker, Postman\nData Structures & Algorithms (DSA)\nEducation\nBachelor's degree in Computer Science, Information Technology, Software Engineering, or a related field.\nExperience\n0–2 years of experience in software development (Freshers are encouraged to apply).\nExperience with personal, academic, or internship projects is preferred.\nKnowledge of full-stack web development and API integration is a plus.",
+  "location": "Bangalore",
+  "salary": "10-15 lpa",
+  "jobType": "Full-time",
+  "category": "Technology",
+  "company": {
+    "$oid": "6a3e482a58efb8405d43d0c2"
+  },
+  "isActive": true,
+  "deadline": {
+    "$date": "2026-06-29T00:00:00.000Z"
+  },
+  "createdAt": {
+    "$date": "2026-06-26T09:40:17.629Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-26T09:40:17.629Z"
+  },
+  "__v": 0
+}]

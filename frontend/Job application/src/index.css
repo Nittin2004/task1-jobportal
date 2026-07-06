@@ -4521,6 +4521,194 @@ select.status-select {
   .dsa2-split-breadcrumb { font-size: 0.75rem; }
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   COMPILER PANEL — MOBILE RESPONSIVE (dsa2-mobile-* classes)
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Mobile panel toggle tabs (Problem | Compiler) */
+.dsa2-mobile-tabs {
+  display: none;
+  flex-shrink: 0;
+}
+.dsa2-mobile-tab-btn {
+  flex: 1;
+  padding: 0.65rem 0;
+  border: none;
+  background: var(--dsa-bg-secondary);
+  color: var(--dsa-text-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+.dsa2-mobile-tab-btn.active {
+  color: #58a6ff;
+  border-bottom-color: #58a6ff;
+  background: var(--dsa-bg-primary);
+}
+
+/* Topbar mobile tweaks */
+.dsa2-overlay-topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 1rem;
+  height: 48px;
+  flex-shrink: 0;
+  background: var(--dsa-bg-secondary);
+  border-bottom: 1px solid var(--dsa-border);
+  overflow: hidden;
+}
+.dsa2-topbar-title {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  overflow: hidden;
+  min-width: 0;
+}
+.dsa2-topbar-title span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  /* Show mobile tab switcher */
+  .dsa2-mobile-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--dsa-border);
+  }
+
+  /* Full split panel now stacks vertically */
+  .dsa2-split-panel-grid {
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Compact topbar */
+  .dsa2-overlay-topbar {
+    height: 44px;
+    padding: 0 0.75rem;
+    gap: 0.5rem;
+  }
+
+  /* Compiler toolbar wraps into 2 rows */
+  .dsa2-compiler-bar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    row-gap: 0.5rem;
+  }
+  .dsa2-lang-tabs {
+    order: 1;
+    flex-shrink: 0;
+  }
+  .dsa2-tc-sc {
+    order: 2;
+    margin-left: 0;
+    flex-shrink: 0;
+  }
+  /* Run/Submit buttons go on second row, full width */
+  .dsa2-compiler-bar > div:last-child {
+    order: 3;
+    width: 100%;
+    display: flex;
+    gap: 0.4rem;
+    justify-content: flex-end;
+  }
+  .dsa2-run-btn,
+  .dsa2-compiler-bar > div:last-child > button {
+    flex: 1;
+    justify-content: center;
+    font-size: 0.78rem;
+    padding: 0.5rem 0.5rem;
+  }
+
+  /* Hide TC/SC badges on very small screens to save space */
+  .dsa2-tc-sc {
+    display: none;
+  }
+
+  /* Editor text area — better touch scrolling */
+  .dsa2-textarea {
+    font-size: 0.75rem;
+    line-height: 1.6;
+    -webkit-overflow-scrolling: touch;
+  }
+  .dsa2-line-nums {
+    font-size: 0.75rem;
+    padding: 0.75rem 0.45rem 0.75rem 0.6rem;
+    min-width: 36px;
+  }
+
+  /* Console panel compact */
+  .dsa2-console {
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  /* Problem panel in mobile: full height scroll */
+  .dsa2-problem {
+    max-height: none;
+    overflow-y: auto;
+  }
+
+  /* Table — hide pattern and companies cols on mobile */
+  .dsa2-table thead th:nth-child(4),
+  .dsa2-table td:nth-child(4) { display: none; }
+  .dsa2-table thead th:nth-child(5),
+  .dsa2-table td:nth-child(5) { display: none; }
+
+  /* Hero adjustments */
+  .dsa2-hero-stats { flex-wrap: wrap; gap: 0.75rem; }
+  .dsa2-hero-stat-v { font-size: 1.2rem; }
+}
+
+@media (max-width: 480px) {
+  /* Even more compact on very small phones */
+  .dsa2-lang-tab {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.68rem;
+  }
+  .dsa2-run-btn,
+  .dsa2-compiler-bar > div:last-child > button {
+    font-size: 0.73rem;
+    padding: 0.45rem 0.4rem;
+  }
+  .dsa2-textarea {
+    font-size: 0.72rem;
+  }
+  .dsa2-overlay-topbar {
+    padding: 0 0.5rem;
+    gap: 0.35rem;
+  }
+  /* Hide theme toggle on tiny screens */
+  .dsa2-theme-toggle-btn {
+    display: none;
+  }
+  .dsa2-prob-head {
+    padding: 1rem;
+  }
+  .dsa2-section {
+    padding: 0.85rem 1rem;
+  }
+  .dsa2-prob-title {
+    font-size: 1rem;
+  }
+  /* Back btn compact */
+  .dsa2-back-btn-text {
+    display: none;
+  }
+  .dsa2-table thead th:nth-child(3),
+  .dsa2-table td:nth-child(3) { display: none; }
+}
+
 /* ── Description Content Styling (LeetCode Style) ── */
 .dsa2-desc-content {
   font-size: 0.9rem;

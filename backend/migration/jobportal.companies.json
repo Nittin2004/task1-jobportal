@@ -1,0 +1,90 @@
+[{
+  "_id": {
+    "$oid": "6a1ff7c5505f25293772dbe6"
+  },
+  "name": "Rohit",
+  "email": "roh@gmail.com",
+  "password": "$2b$10$T0UwU7wCpNqv3DYw299Q0.PIne0E2GmNI6RDGVr2G4qiA603z1c9a",
+  "phone": "89878997",
+  "website": "",
+  "industry": "tech",
+  "description": "",
+  "location": "Noida",
+  "logo": "",
+  "role": "company",
+  "createdAt": {
+    "$date": "2026-06-03T09:45:41.860Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-03T09:45:41.860Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a23d2fca0a1405e184ac052"
+  },
+  "name": "Geocon Semiconductor LLp",
+  "email": "hr@gmail.com",
+  "password": "$2b$10$g4BjesaDC6HjyKlYLn.9IORBJ79SaKxf85RPqJlnOqIoiY/hOjGPS",
+  "phone": "9898989898",
+  "website": "https://geocon.in/",
+  "industry": "Technology IT",
+  "description": "software and electronics company",
+  "location": "Noida 63",
+  "logo": "",
+  "role": "company",
+  "createdAt": {
+    "$date": "2026-06-06T07:57:48.576Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-11T05:59:02.608Z"
+  },
+  "__v": 0,
+  "companySize": "20"
+},
+{
+  "_id": {
+    "$oid": "6a25053fc3940ce23caba3a2"
+  },
+  "name": "asdas",
+  "email": "company@test.com",
+  "password": "$2b$10$y051aMkGJnMy2zg39ImIzOHTtFtMWymH5Vb5sRjuzV3k5AhCZ.kKK",
+  "phone": "9876543211",
+  "website": "",
+  "industry": "Technology",
+  "description": "",
+  "location": "Mumbai",
+  "logo": "",
+  "role": "company",
+  "createdAt": {
+    "$date": "2026-06-07T05:44:31.047Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-07T05:44:31.047Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a3e482a58efb8405d43d0c2"
+  },
+  "name": "Google",
+  "email": "google12@gmail.com",
+  "password": "$2b$10$h401t2Fo0obvOCgml7t.Ne0cuQ31KaBVYfpGuv7hjsEMTMC00ZLAW",
+  "phone": "9797925921",
+  "website": "",
+  "industry": "Tech",
+  "description": "",
+  "location": "Bangalore",
+  "logo": "",
+  "companySize": "",
+  "role": "company",
+  "createdAt": {
+    "$date": "2026-06-26T09:36:42.752Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-26T09:36:42.752Z"
+  },
+  "__v": 0
+}]

@@ -1,0 +1,180 @@
+[{
+  "_id": {
+    "$oid": "6a1ff870505f25293772dbe9"
+  },
+  "candidate": {
+    "$oid": "6a1ff85c505f25293772dbe8"
+  },
+  "job": {
+    "$oid": "6a1ff812505f25293772dbe7"
+  },
+  "createdAt": {
+    "$date": "2026-06-03T09:48:32.997Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-03T09:48:32.997Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a21172b89ed1ba5e4e4a521"
+  },
+  "candidate": {
+    "$oid": "6a2116d689ed1ba5e4e4a520"
+  },
+  "job": {
+    "$oid": "6a1ff812505f25293772dbe7"
+  },
+  "createdAt": {
+    "$date": "2026-06-04T06:11:55.163Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-04T06:11:55.163Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a23ce83dcee6d1444d6f360"
+  },
+  "candidate": {
+    "$oid": "6a23ce75dcee6d1444d6f35f"
+  },
+  "job": {
+    "$oid": "6a23ba93141cdc6cc3901ef1"
+  },
+  "createdAt": {
+    "$date": "2026-06-06T07:38:43.932Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-06T07:38:43.932Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a23da78a0a1405e184ac056"
+  },
+  "candidate": {
+    "$oid": "6a23d265a0a1405e184ac050"
+  },
+  "job": {
+    "$oid": "6a23d422a0a1405e184ac054"
+  },
+  "createdAt": {
+    "$date": "2026-06-06T08:29:44.416Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-06T08:29:44.416Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a250c8fc3940ce23caba3a4"
+  },
+  "candidate": {
+    "$oid": "6a2412fa682e8e91a1df02a2"
+  },
+  "job": {
+    "$oid": "6a23d422a0a1405e184ac054"
+  },
+  "createdAt": {
+    "$date": "2026-06-07T06:15:43.327Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-07T06:15:43.327Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a26616ce90a83ee4eff9041"
+  },
+  "candidate": {
+    "$oid": "6a265c2ce90a83ee4eff903d"
+  },
+  "job": {
+    "$oid": "6a23d3a2a0a1405e184ac053"
+  },
+  "createdAt": {
+    "$date": "2026-06-08T06:30:04.071Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T06:30:04.071Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a26645cc96561608abba2f4"
+  },
+  "candidate": {
+    "$oid": "6a26644ec96561608abba2f3"
+  },
+  "job": {
+    "$oid": "6a265d20e90a83ee4eff9040"
+  },
+  "createdAt": {
+    "$date": "2026-06-08T06:42:36.052Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T06:42:36.052Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a2681945635edc2d607e7f6"
+  },
+  "candidate": {
+    "$oid": "6a26644ec96561608abba2f3"
+  },
+  "job": {
+    "$oid": "6a1ff812505f25293772dbe7"
+  },
+  "createdAt": {
+    "$date": "2026-06-08T08:47:16.149Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-08T08:47:16.149Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a2bc833f5c3ad2636c21e56"
+  },
+  "candidate": {
+    "$oid": "6a2bc7faf5c3ad2636c21e55"
+  },
+  "job": {
+    "$oid": "6a265d20e90a83ee4eff9040"
+  },
+  "createdAt": {
+    "$date": "2026-06-12T08:49:55.954Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-12T08:49:55.954Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a2bc861f5c3ad2636c21e58"
+  },
+  "candidate": {
+    "$oid": "6a2bc7faf5c3ad2636c21e55"
+  },
+  "job": {
+    "$oid": "6a1ff812505f25293772dbe7"
+  },
+  "createdAt": {
+    "$date": "2026-06-12T08:50:41.871Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-12T08:50:41.871Z"
+  },
+  "__v": 0
+}]

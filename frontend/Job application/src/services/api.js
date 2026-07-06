@@ -46,9 +46,11 @@ export const getAllCandidates = () => API.get('/admin/candidates');
 export const getAllCompanies = () => API.get('/admin/companies');
 export const getAllJobs = () => API.get('/admin/jobs');
 export const getAllApplications = () => API.get('/admin/applications');
+export const getAllBookings = () => API.get('/admin/bookings');
 export const adminDeleteCandidate = (id) => API.delete(`/admin/candidates/${id}`);
 export const adminDeleteCompany = (id) => API.delete(`/admin/companies/${id}`);
 export const adminDeleteJob = (id) => API.delete(`/admin/jobs/${id}`);
+export const adminDeleteBooking = (id) => API.delete(`/admin/bookings/${id}`);
 
 // Academy & Courses
 export const getCourses = () => API.get('/courses');
