@@ -3,7 +3,9 @@ backend/uploads/
 *.pdf
 
 # Environment variables
-# (optional, keep it if it's already tracked, but ignore custom local .env files)
+.env
+*.env
+*.env.*
 *.env.local
 *.env.development.local
 *.env.test.local
