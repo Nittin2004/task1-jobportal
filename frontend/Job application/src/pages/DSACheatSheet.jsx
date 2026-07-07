@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars, no-empty, react-hooks/set-state-in-effect, react-hooks/exhaustive-deps, react-hooks/purity, no-useless-escape */
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { Link } from 'react-router-dom';
 import { DSA_TOPICS, ALL_QUESTIONS } from '../data/dsaData';
 import toast from 'react-hot-toast';
 import { getProfile, API_BASE_URL } from '../services/api';
@@ -466,6 +467,7 @@ const CompilerPanel = ({ question, userProfile }) => {
     const uid = userProfile?._id || userProfile?.id || null;
     if (isSubmit && !uid) {
       toast.error('Please log in to submit your code and track your progress!');
+      setConsoleTab('submissions');
       return;
     }
 
@@ -1003,8 +1005,15 @@ const CompilerPanel = ({ question, userProfile }) => {
             {!(userProfile?._id || userProfile?.id) && (
               <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--dsa-text-muted)', border: '1px dashed var(--dsa-border)', borderRadius: '12px' }}>
                 <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🔒</div>
-                <div style={{ fontWeight: 600, color: 'var(--dsa-text)' }}>Login Required</div>
-                <p style={{ fontSize: '0.85rem', margin: '0.3rem 0 0' }}>Please log in to view and save your past submissions!</p>
+                <div style={{ fontWeight: 600, color: 'var(--dsa-text)', fontSize: '1.1rem' }}>Login Required to Submit Code</div>
+                <p style={{ fontSize: '0.85rem', margin: '0.5rem 0 1.2rem' }}>Please sign in to your account to save solutions, track execution time, and build your DSA profile!</p>
+                <Link to="/login" style={{
+                  background: '#6366f1', color: '#fff', padding: '0.55rem 1.4rem',
+                  borderRadius: '8px', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem',
+                  display: 'inline-flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(99,102,241,0.3)'
+                }}>
+                  🔑 Sign In / Register
+                </Link>
               </div>
             )}
             {(userProfile?._id || userProfile?.id) && loadingSubmissions && (
