@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { getMyApplications, getSavedJobs, unsaveJob, getProfile, updateProfile, uploadResume, getMyBookings } from '../services/api';
+import { getMyApplications, getSavedJobs, unsaveJob, getProfile, updateProfile, uploadResume, getMyBookings, SERVER_URL } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import DashboardLayout from '../components/DashboardLayout';
 
@@ -495,7 +495,7 @@ const CandidateDashboard = () => {
                     <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileChange} style={{ padding: '0.4rem' }} />
                     {profile.resumeUrl && (
                       <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-                        Current: <a href={`http://localhost:5000${profile.resumeUrl}`} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: 600 }}>View Resume</a>
+                        Current: <a href={`${SERVER_URL}${profile.resumeUrl}`} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: 600 }}>View Resume</a>
                       </p>
                     )}
                   </div>
@@ -513,7 +513,7 @@ const CandidateDashboard = () => {
                   <p className="ds-profile-email">{profile.email}</p>
                   {profile.phone && <p className="ds-profile-phone">📞 {profile.phone}</p>}
                   {profile.resumeUrl ? (
-                    <a href={`http://localhost:5000${profile.resumeUrl}`} target="_blank" rel="noreferrer" className="ds-resume-btn">📄 View Resume</a>
+                    <a href={`${SERVER_URL}${profile.resumeUrl}`} target="_blank" rel="noreferrer" className="ds-resume-btn">📄 View Resume</a>
                   ) : (
                     <p className="ds-no-resume">No resume uploaded</p>
                   )}

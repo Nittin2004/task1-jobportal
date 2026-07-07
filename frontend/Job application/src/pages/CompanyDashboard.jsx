@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { getMyJobs, getJobApplicants, updateAppStatus, deleteJob, getProfile, updateProfile } from '../services/api';
+import { getMyJobs, getJobApplicants, updateAppStatus, deleteJob, getProfile, updateProfile, SERVER_URL } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import DashboardLayout from '../components/DashboardLayout';
 
@@ -324,7 +324,7 @@ const CompanyDashboard = () => {
                         <td>{app.candidate?.phone || app.candidatePhone || '-'}</td>
                         <td>
                           {app.resumeUrl ? (
-                            <a href={`http://localhost:5000${app.resumeUrl}`} target="_blank" rel="noreferrer" className="resume-link">📄 View</a>
+                            <a href={`${SERVER_URL}${app.resumeUrl}`} target="_blank" rel="noreferrer" className="resume-link">📄 View</a>
                           ) : '-'}
                         </td>
                         <td>{new Date(app.createdAt).toLocaleDateString('en-IN')}</td>

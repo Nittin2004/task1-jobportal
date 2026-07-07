@@ -3,7 +3,7 @@ import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { DSA_TOPICS, ALL_QUESTIONS } from '../data/dsaData';
 import toast from 'react-hot-toast';
-import { getProfile } from '../services/api';
+import { getProfile, API_BASE_URL } from '../services/api';
 import PremiumModal from '../components/PremiumModal';
 import { Lock } from 'lucide-react';
 
@@ -199,7 +199,7 @@ const CompilerPanel = ({ question, userProfile }) => {
     setLoadingSubmissions(true);
     const uid = userProfile?._id || userProfile?.id || '';
     const query = uid ? `?userId=${uid}` : '';
-    fetch(`http://localhost:5000/api/leetcode/submission/${slug}/${lang}${query}`)
+    fetch(`${API_BASE_URL}/leetcode/submission/${slug}/${lang}${query}`)
       .then(r => r.json())
       .then(d => setPastSubmissions(d))
       .catch(() => setPastSubmissions(null))
@@ -271,7 +271,7 @@ const CompilerPanel = ({ question, userProfile }) => {
     }
     if (!slug) return;
 
-    fetch(`http://localhost:5000/api/leetcode/${slug}`)
+    fetch(`${API_BASE_URL}/leetcode/${slug}`)
       .then(r => r.json())
       .then(d => {
         setQuestionMeta(d.metaData);
@@ -497,7 +497,7 @@ const CompilerPanel = ({ question, userProfile }) => {
           // ── Do NOT send expected_output to Judge0 ──────────────────────────
           // We do our own flexible client-side comparison so that practice code
           // with extra prints (e.g. "Majority Element: 2\nDone") isn't penalised.
-          const response = await fetch('http://localhost:5000/api/compiler/execute', {
+          const response = await fetch(`${API_BASE_URL}/compiler/execute`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -557,7 +557,7 @@ const CompilerPanel = ({ question, userProfile }) => {
       if (isSubmit || overallKind === 'finished') {
         let slug = question.link?.includes('problems/') ? question.link.split('problems/')[1].replace('/', '') : String(question.id);
         const subStatus = overallKind === 'finished' ? 'Accepted' : (STATUS_META[overallKind]?.label || 'Wrong Answer');
-        await fetch('http://localhost:5000/api/leetcode/submit', {
+        await fetch(`${API_BASE_URL}/leetcode/submit`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1096,7 +1096,7 @@ const ProblemPanel = ({ question, solved, bookmarked, notes, onSolve, onBookmark
     if (slug) {
       setLoadingDesc(true);
       setFetchedDesc(null);
-      fetch(`http://localhost:5000/api/leetcode/${slug}`)
+      fetch(`${API_BASE_URL}/leetcode/${slug}`)
         .then(r => r.json())
         .then(d => {
           if (d.content) setFetchedDesc(d.content);
