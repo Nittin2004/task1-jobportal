@@ -141,6 +141,10 @@ router.post('/submit', async (req, res) => {
     }
 
     const cleanUserId = (userId && userId !== 'null' && userId !== 'undefined') ? String(userId) : null;
+    if (!cleanUserId) {
+      return res.status(401).json({ error: 'You must be logged in to save submissions.' });
+    }
+
     const filter = { questionSlug, language, userId: cleanUserId };
     const update = {
       questionTitle: questionTitle || questionSlug,
@@ -165,18 +169,12 @@ router.get('/submission/:slug/:language', async (req, res) => {
     const { slug, language } = req.params;
     const { userId } = req.query;
     
-    let submission = null;
     const cleanUserId = (userId && userId !== 'null' && userId !== 'undefined') ? String(userId) : null;
-    if (cleanUserId) {
-      submission = await Submission.findOne({ questionSlug: slug, language, userId: cleanUserId });
-    }
-    if (!submission) {
-      submission = await Submission.findOne({ questionSlug: slug, language, userId: null });
-    }
-    if (!submission) {
-      submission = await Submission.findOne({ questionSlug: slug, language }).sort({ updatedAt: -1 });
+    if (!cleanUserId) {
+      return res.json({ submission: null });
     }
 
+    const submission = await Submission.findOne({ questionSlug: slug, language, userId: cleanUserId });
     res.json({ submission });
   } catch (err) {
     console.error('Error fetching submission:', err);

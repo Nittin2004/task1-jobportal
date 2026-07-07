@@ -463,6 +463,12 @@ const CompilerPanel = ({ question, userProfile }) => {
 
   // ── Run Code / Submit ────────────────────────────────────────────────────
   const runCode = async (isSubmit = false) => {
+    const uid = userProfile?._id || userProfile?.id || null;
+    if (isSubmit && !uid) {
+      toast.error('Please log in to submit your code and track your progress!');
+      return;
+    }
+
     // Run code with the currently selected language tab
     const effectiveLang = lang;
 
@@ -554,7 +560,8 @@ const CompilerPanel = ({ question, userProfile }) => {
       if (maxMemory > 0) setRunMemory((maxMemory / 1024).toFixed(1));
 
       // Save submission to database if user submitted or if execution succeeded clean
-      if (isSubmit || overallKind === 'finished') {
+      const uid = userProfile?._id || userProfile?.id || null;
+      if (uid && (isSubmit || overallKind === 'finished')) {
         let slug = question.link?.includes('problems/') ? question.link.split('problems/')[1].replace('/', '') : String(question.id);
         const subStatus = overallKind === 'finished' ? 'Accepted' : (STATUS_META[overallKind]?.label || 'Wrong Answer');
         await fetch(`${API_BASE_URL}/leetcode/submit`, {
@@ -993,20 +1000,27 @@ const CompilerPanel = ({ question, userProfile }) => {
         {/* ── Submissions tab ────────────────────────────────────────────── */}
         {consoleTab === 'submissions' && (
           <div style={{ padding: '0.5rem 0' }}>
-            {loadingSubmissions && (
+            {!(userProfile?._id || userProfile?.id) && (
+              <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--dsa-text-muted)', border: '1px dashed var(--dsa-border)', borderRadius: '12px' }}>
+                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🔒</div>
+                <div style={{ fontWeight: 600, color: 'var(--dsa-text)' }}>Login Required</div>
+                <p style={{ fontSize: '0.85rem', margin: '0.3rem 0 0' }}>Please log in to view and save your past submissions!</p>
+              </div>
+            )}
+            {(userProfile?._id || userProfile?.id) && loadingSubmissions && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--dsa-text-muted)' }}>
                 <span style={{ fontSize: '1.2rem', animation: 'spin 1s linear infinite', display: 'inline-block' }}>⏳</span>
                 <span>Loading past submissions…</span>
               </div>
             )}
-            {!loadingSubmissions && !pastSubmissions?.submission && (
+            {(userProfile?._id || userProfile?.id) && !loadingSubmissions && !pastSubmissions?.submission && (
               <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--dsa-text-muted)', border: '1px dashed var(--dsa-border)', borderRadius: '12px' }}>
                 <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📭</div>
                 <div style={{ fontWeight: 600, color: 'var(--dsa-text)' }}>No submissions yet for {LANG_LABEL[lang] || lang}</div>
                 <p style={{ fontSize: '0.85rem', margin: '0.3rem 0 0' }}>Write your solution and click 🚀 Submit to save it here!</p>
               </div>
             )}
-            {!loadingSubmissions && pastSubmissions?.submission && (() => {
+            {(userProfile?._id || userProfile?.id) && !loadingSubmissions && pastSubmissions?.submission && (() => {
               const sub = pastSubmissions.submission;
               const isAcc = sub.status === 'Accepted' || sub.status === 'Finished';
               return (
