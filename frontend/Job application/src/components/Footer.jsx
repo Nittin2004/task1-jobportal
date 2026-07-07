@@ -8,7 +8,10 @@ const Footer = () => {
 
           {/* Brand */}
           <div className="footer-brand">
-            <h2>💼 NextHire</h2>
+            <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <img src="/favicon.svg" alt="NextHire Logo" style={{ width: '28px', height: '28px' }} />
+              <span>NextHire</span>
+            </h2>
             <p>Connecting talented candidates with top companies across India. Your career journey starts here.</p>
           </div>
 

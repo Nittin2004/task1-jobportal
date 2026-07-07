@@ -8,7 +8,6 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   
   const [academyOpen, setAcademyOpen] = useState(false);
-  const [careersOpen, setCareersOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [prepOpen, setPrepOpen] = useState(false);
   
@@ -33,7 +32,6 @@ const Navbar = () => {
   const closeAll = () => {
     setMenuOpen(false);
     setAcademyOpen(false);
-    setCareersOpen(false);
     setProfileOpen(false);
     setPrepOpen(false);
   };
@@ -63,7 +61,8 @@ const Navbar = () => {
     <nav className={`navbar ${isVisible ? '' : 'navbar-hidden'}`}>
       <div className="nav-container">
         <Link to="/" className="nav-logo" onClick={handleLogoClick}>
-          💼 NextHire
+          <img src="/favicon.svg" alt="NextHire Logo" className="nav-logo-icon" />
+          <span>NextHire</span>
         </Link>
 
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle Menu">
@@ -156,12 +155,9 @@ const Navbar = () => {
 
           {/* User Auth Section */}
           {!user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginLeft: 'auto' }}>
-              <Link to="/login" onClick={closeAll} style={{ fontWeight: 600, color: 'var(--text)' }}>
-                Login
-              </Link>
-              <Link to="/register/candidate" className="btn-primary-1" onClick={closeAll}>
-                Register
+            <div style={{ marginLeft: 'auto' }}>
+              <Link to="/login" className="btn-get-started" onClick={closeAll}>
+                🚀 Login / Register
               </Link>
             </div>
           ) : (

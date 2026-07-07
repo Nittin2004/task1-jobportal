@@ -36,7 +36,9 @@ const DashboardLayout = ({ navItems, activeTab, onTabChange, children, title, su
         {/* Brand */}
         <div className="ds-brand">
           <Link to="/" className="ds-brand-link">
-            <div className="ds-brand-icon">💼</div>
+            <div className="ds-brand-icon">
+              <img src="/favicon.svg" alt="NextHire Logo" className="ds-brand-img" style={{ width: '32px', height: '32px' }} />
+            </div>
             <div className="ds-brand-text">
               <span className="ds-brand-name">NextHire</span>
               <span className="ds-brand-tagline">Find your dream job</span>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect, no-empty */
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';

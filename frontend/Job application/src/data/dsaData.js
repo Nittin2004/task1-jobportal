@@ -168,8 +168,8 @@ const ARRAYS = [
   <li><code>0 &lt;= left &lt;= right &lt; nums.length</code></li>
 </ul>`),
   q(26,'Arrays','Pascal\'s Triangle','Easy','Array Construction','pascals-triangle',['Apple','Amazon','Microsoft'],
-`<p>Given an integer <code>numRows</code>, return the first <code>numRows</code> of <strong>Pascal\'s triangle</strong>.</p>
-<p>In Pascal\'s triangle, each number is the sum of the two numbers directly above it.</p>
+`<p>Given an integer <code>numRows</code>, return the first <code>numRows</code> of <strong>Pascal's triangle</strong>.</p>
+<p>In Pascal's triangle, each number is the sum of the two numbers directly above it.</p>
 
 <p><strong>Example 1:</strong></p>
 <pre><strong>Input:</strong> numRows = 5

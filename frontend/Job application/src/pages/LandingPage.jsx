@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 /* ── Animation Variants ── */
 const fadeUp = {
@@ -523,7 +523,7 @@ const LandingPage = () => {
             <p className="lp-section-sub">Click a category to instantly find matching jobs</p>
           </motion.div>
           <motion.div variants={fadeUp} custom={1} className="lp-category-pills">
-            {categories.map((cat, i) => (
+            {categories.map((cat) => (
               <motion.button
                 key={cat.value}
                 className="lp-cat-pill"

@@ -1,6 +1,16 @@
-import React from 'react';
 import { X, CheckCircle, Lock, Zap } from 'lucide-react';
 import api from '../services/api';
+
+const loadRazorpayScript = (src) => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) { resolve(true); return; }
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
 
 const PremiumModal = ({ isOpen, onClose, onSuccess }) => {
   if (!isOpen) return null;
@@ -47,17 +57,6 @@ const PremiumModal = ({ isOpen, onClose, onSuccess }) => {
       console.error('Error initiating payment:', error);
       alert('Could not initiate payment. Please try again.');
     }
-  };
-
-  const loadRazorpayScript = (src) => {
-    return new Promise((resolve) => {
-      if (window.Razorpay) { resolve(true); return; }
-      const script = document.createElement('script');
-      script.src = src;
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
   };
 
   const overlayStyle = {
