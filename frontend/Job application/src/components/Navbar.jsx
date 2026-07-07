@@ -108,11 +108,18 @@ const Navbar = () => {
               Preparation <span className="chevron-down">{prepOpen ? '▲' : '▼'}</span>
             </button>
             <div className={`nav-dropdown-menu ${prepOpen ? 'mobile-show' : ''}`}>
+              <Link to="/preparation/dsasheet" className="nav-dropdown-item" onClick={closeAll}>
+                <span className="nav-dropdown-icon">💡</span>
+                <div className="nav-dropdown-info">
+                  <span className="nav-dropdown-title">DSA Master Sheet</span>
+                  <span className="nav-dropdown-desc">400+ coding problems & compiler</span>
+                </div>
+              </Link>
               <Link to="/preparation/dsa" className="nav-dropdown-item" onClick={closeAll}>
                 <span className="nav-dropdown-icon">🌳</span>
                 <div className="nav-dropdown-info">
-                  <span className="nav-dropdown-title">DSA</span>
-                  <span className="nav-dropdown-desc">Data structures & algorithms</span>
+                  <span className="nav-dropdown-title">DSA Theory & Concepts</span>
+                  <span className="nav-dropdown-desc">Conceptual Q&A and explanations</span>
                 </div>
               </Link>
               <Link to="/preparation/aptitude" className="nav-dropdown-item" onClick={closeAll}>

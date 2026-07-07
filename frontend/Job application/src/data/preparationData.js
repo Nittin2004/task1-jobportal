@@ -7,7 +7,7 @@ export const preparationData = {
     questions: []
   },
   dsa: {
-    title: "Data Structures & Algorithms",
+    title: "DSA Theory & Concepts",
     description: "Understand time complexity, design patterns, sorting, trees, and linked list structures.",
     icon: "🌳",
     questions: [

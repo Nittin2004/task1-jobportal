@@ -233,6 +233,22 @@ const Preparation = () => {
             <div className="prep-sidebar">
               <h3 className="prep-sidebar-title">Modules</h3>
               <div className="prep-sidebar-links">
+                {/* ── DSA Master Sheet (400 Q) at the Top ── */}
+                <button
+                  className={`prep-sidebar-btn ${isDSASheet ? 'active' : ''}`}
+                  style={{ borderLeft: `3px solid ${isDSASheet ? '#6366f1' : 'transparent'}`, background: isDSASheet ? 'rgba(99,102,241,0.1)' : undefined, marginBottom: '0.3rem' }}
+                  onClick={() => navigate('/preparation/dsasheet')}
+                >
+                  <div className="prep-sidebar-btn-left">
+                    <span style={{ fontSize: '1.1rem' }}>💡</span>
+                    <span style={{ fontWeight: 700, color: isDSASheet ? '#6366f1' : 'var(--text-main)' }}>DSA Master Sheet</span>
+                  </div>
+                  <div className="prep-sidebar-btn-right">
+                    <span className="prep-module-pill" style={{ background: 'rgba(99,102,241,0.15)', color: '#6366f1' }}>400 Q</span>
+                  </div>
+                </button>
+                <div style={{ height: 1, background: 'var(--border)', margin: '0.3rem 0 0.6rem' }} />
+
                 {Object.keys(preparationData).map(key => {
                   const isActive = key === activeModuleKey;
                   const moduleStat = stats.modules[key];
@@ -265,36 +281,20 @@ const Preparation = () => {
                   onChange={(e) => navigate(`/preparation/${e.target.value}`)}
                   className="prep-mobile-select"
                 >
+                  <option value="dsasheet">💡 DSA Master Sheet (400 Q)</option>
                   {Object.keys(preparationData).map(key => (
                     <option key={key} value={key}>
                       {preparationData[key].title} ({stats.modules[key].mastered}/{stats.modules[key].total})
                     </option>
                   ))}
-                  <option value="dsasheet">💡 DSA Cheat Sheet (400 Q)</option>
                 </select>
               </div>
 
-              {/* ── DSA Cheat Sheet special button ── */}
+              {/* ── Global Leaderboard ── */}
               <div style={{ padding: '0.75rem 0.5rem 0' }}>
                 <div style={{ height: 1, background: 'var(--border)', marginBottom: '0.75rem' }} />
                 <button
-                  className={`prep-sidebar-btn ${isDSASheet ? 'active' : ''}`}
-                  style={{ borderLeft: `3px solid ${isDSASheet ? '#6366f1' : 'transparent'}`, background: isDSASheet ? 'rgba(99,102,241,0.1)' : undefined }}
-                  onClick={() => navigate('/preparation/dsasheet')}
-                >
-                  <div className="prep-sidebar-btn-left">
-                    <span style={{ fontSize: '1.1rem' }}>💡</span>
-                    <span style={{ fontWeight: 700, color: isDSASheet ? '#6366f1' : 'var(--text-main)' }}>DSA Master Sheet (400 Q)</span>
-                  </div>
-                  <div className="prep-sidebar-btn-right">
-                    <span className="prep-module-pill" style={{ background: 'rgba(99,102,241,0.15)', color: '#6366f1' }}>400 Q</span>
-                  </div>
-                </button>
-
-                {/* ── Global Leaderboard ── */}
-                <button
                   className="prep-sidebar-btn"
-                  style={{ marginTop: '0.25rem' }}
                   onClick={() => navigate('/preparation/leaderboard')}
                 >
                   <div className="prep-sidebar-btn-left">
