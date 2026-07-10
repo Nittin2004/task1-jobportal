@@ -1,5 +1,6 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
+const { authMiddleware } = require('../middleware/auth');
 const router = express.Router();
 
 const compilerLimiter = rateLimit({
@@ -56,7 +57,7 @@ const STATUS_MAP = {
 *   expected_output: string,       // echoed back so the frontend can show it
 * }
 */
-router.post('/execute', compilerLimiter, async (req, res) => {
+router.post('/execute', authMiddleware, compilerLimiter, async (req, res) => {
   try {
     const { language, code, stdin, expected_output, metaData } = req.body;
 

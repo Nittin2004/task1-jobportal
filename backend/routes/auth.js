@@ -130,8 +130,8 @@ router.put('/profile', authMiddleware, async (req, res) => {
         { new: true }
       ).select('-password');
       return res.json(user);
-    }
-
+    }    
+ 
     if (req.user.role === 'company') {
       const updatedFields = {};
       if (name !== undefined) updatedFields.name = name;

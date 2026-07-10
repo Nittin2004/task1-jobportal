@@ -465,9 +465,13 @@ const CompilerPanel = ({ question, userProfile }) => {
   // ── Run Code / Submit ────────────────────────────────────────────────────
   const runCode = async (isSubmit = false) => {
     const uid = userProfile?._id || userProfile?.id || null;
-    if (isSubmit && !uid) {
-      toast.error('Please log in to submit your code and track your progress!');
-      setConsoleTab('submissions');
+    if (!uid) {
+      toast.error(isSubmit ? 'Please log in to submit your code and track your progress!' : 'Please log in to run code!');
+      setConsoleTab(isSubmit ? 'submissions' : 'result');
+      if (!isSubmit) {
+        setGlobalStatus('auth_required');
+        setGlobalError('');
+      }
       return;
     }
 
@@ -505,9 +509,13 @@ const CompilerPanel = ({ question, userProfile }) => {
           // ── Do NOT send expected_output to Judge0 ──────────────────────────
           // We do our own flexible client-side comparison so that practice code
           // with extra prints (e.g. "Majority Element: 2\nDone") isn't penalised.
+          const token = localStorage.getItem('token');
           const response = await fetch(`${API_BASE_URL}/compiler/execute`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            },
             body: JSON.stringify({
               language: effectiveLang,
               code,
@@ -515,6 +523,11 @@ const CompilerPanel = ({ question, userProfile }) => {
               metaData: questionMeta,
             }),
           });
+          if (response.status === 401) {
+            toast.error('Please log in to run code!');
+            setRunning(false);
+            return;
+          }
           if (!response.ok) throw new Error(`Server responded with ${response.status}`);
           const data = await response.json();
 
@@ -781,6 +794,22 @@ const CompilerPanel = ({ question, userProfile }) => {
         {/* ── Result tab ───────────────────────────────────────────────── */}
         {consoleTab === 'result' && (
           <div>
+            {/* Auth required state */}
+            {!running && globalStatus === 'auth_required' && (
+              <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--dsa-text-muted)', border: '1px dashed var(--dsa-border)', borderRadius: '12px' }}>
+                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🔒</div>
+                <div style={{ fontWeight: 600, color: 'var(--dsa-text)', fontSize: '1.1rem' }}>Login Required to Run Code</div>
+                <p style={{ fontSize: '0.85rem', margin: '0.5rem 0 1.2rem' }}>Please sign in to your account to execute code, test against custom cases, and save solutions!</p>
+                <Link to="/login" style={{
+                  background: '#6366f1', color: '#fff', padding: '0.55rem 1.4rem',
+                  borderRadius: '8px', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem',
+                  display: 'inline-flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(99,102,241,0.3)'
+                }}>
+                  🔑 Sign In / Register
+                </Link>
+              </div>
+            )}
+
             {/* Idle state */}
             {!globalStatus && !running && (
               <p style={{ color: 'var(--dsa-text-muted)', margin: 0 }}>Press ▶ Run Code to see results…</p>
