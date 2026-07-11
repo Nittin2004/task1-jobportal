@@ -9,7 +9,8 @@ const router = express.Router();
 
 // Generate JWT
 const generateToken = (id, role) => {
-  return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  const secret = process.env.JWT_SECRET || 'fallback_jwt_secret_key_your_nexthire';
+  return jwt.sign({ id, role }, secret, { expiresIn: '7d' });
 };
  
 // Candidate Register
@@ -50,12 +51,16 @@ router.post('/login', async (req, res) => {
     const { email, password, role } = req.body;
 
     // Admin login
-    if (role === 'admin') {
-      const adminEmail = process.env.ADMIN_EMAIL || 'nittin@nexthire.com';
-      const adminPass  = process.env.ADMIN_PASSWORD || 'Nittin@9792';
-      if (email === adminEmail && password === adminPass) {
-        const token = jwt.sign({ id: 'admin', role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '7d' });
-        return res.json({ token, user: { id: 'admin', name: 'Admin', email, role: 'admin' } });
+    if (role === 'admin' || (role && role.toString().trim().toLowerCase() === 'admin')) {
+      const cleanInputEmail = (email || '').trim().replace(/^["']|["']$/g, '');
+      const cleanInputPass  = (password || '').trim().replace(/^["']|["']$/g, '');
+      const adminEmail = (process.env.ADMIN_EMAIL || 'nittin@nexthire.com').trim().replace(/^["']|["']$/g, '');
+      const adminPass  = (process.env.ADMIN_PASSWORD || 'Nittin@9792').trim().replace(/^["']|["']$/g, '');
+
+      if (cleanInputEmail.toLowerCase() === adminEmail.toLowerCase() && cleanInputPass === adminPass) {
+        const secret = process.env.JWT_SECRET || 'fallback_jwt_secret_key_your_nexthire';
+        const token = jwt.sign({ id: 'admin', role: 'admin' }, secret, { expiresIn: '7d' });
+        return res.json({ token, user: { id: 'admin', name: 'Admin', email: cleanInputEmail, role: 'admin' } });
       }
       return res.status(401).json({ message: 'Invalid admin credentials' });
     }
@@ -91,7 +96,8 @@ router.get('/profile', async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) return res.status(401).json({ message: 'No token' });
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const secret = process.env.JWT_SECRET || 'fallback_jwt_secret_key_your_nexthire';
+    const decoded = jwt.verify(token, secret);
 
     if (decoded.role === 'candidate') {
       const user = await User.findById(decoded.id).select('-password');

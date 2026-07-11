@@ -17,7 +17,7 @@ const Login = () => {
     setError('');
     setLoading(true);
     try {
-      const res = await loginUser({ ...form, role });
+      const res = await loginUser({ ...form, email: form.email.trim(), password: form.password.trim(), role });
       login(res.data.user, res.data.token);
       toast.success('Login successful!');
       if (res.data.user.role === 'candidate') navigate('/candidate-dashboard');
