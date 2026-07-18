@@ -13,9 +13,11 @@ API.interceptors.request.use((config) => {  // Intercept request to add token
 });
 
 // Auth 
+export const sendOtp = (data) => API.post('/auth/send-otp', data);
 export const registerCandidate = (data) => API.post('/auth/register/candidate', data);
 export const registerCompany = (data) => API.post('/auth/register/company', data);
 export const loginUser = (data) => API.post('/auth/login', data);
+export const googleAuth = (data) => API.post('/auth/google', data);
 export const getProfile = () => API.get('/auth/profile');
 export const updateProfile = (data) => API.put('/auth/profile', data);
 

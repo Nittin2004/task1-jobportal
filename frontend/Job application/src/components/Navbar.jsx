@@ -12,11 +12,13 @@ const Navbar = () => {
   const [prepOpen, setPrepOpen] = useState(false);
   
   const [isVisible, setIsVisible] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
+      setIsScrolled(currentScrollY > 20);
       if (currentScrollY > lastScrollY && currentScrollY > 60) {
         setIsVisible(false);
       } else if (currentScrollY < lastScrollY) {
@@ -58,7 +60,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className={`navbar ${isVisible ? '' : 'navbar-hidden'}`}>
+    <nav className={`navbar ${isVisible ? '' : 'navbar-hidden'} ${isScrolled ? 'navbar-scrolled' : ''}`}>
       <div className="nav-container">
         <Link to="/" className="nav-logo" onClick={handleLogoClick}>
           <img src="/favicon.svg" alt="NextHire Logo" className="nav-logo-icon" />

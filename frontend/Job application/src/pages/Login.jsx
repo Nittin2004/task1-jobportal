@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { loginUser } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import GoogleAuthButton from '../components/GoogleAuthButton';
 
 const Login = () => {
   const { login } = useAuth();
@@ -63,14 +64,22 @@ const Login = () => {
         </form>
 
         {role !== 'admin' && (
-          <div className="auth-footer">
-            Don't have an account?{' '}
-            <Link to={`/register/${role}`}>Register here</Link>
-          </div>
+          <>
+            <div style={{ margin: '1.25rem 0 0.75rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }}></div>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>OR</span>
+              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }}></div>
+            </div>
+            <GoogleAuthButton role={role} text={`Continue with Google as ${role === 'candidate' ? 'Candidate' : 'Company'}`} />
+            
+            <div className="auth-footer" style={{ marginTop: '1.25rem' }}>
+              Don't have an account?{' '}
+              <Link to={`/register/${role}`}>Register here</Link>
+            </div>
+          </>
         )}
         {role === 'admin' && (
           <div className="auth-footer" style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            
           </div>
         )}
       </div>

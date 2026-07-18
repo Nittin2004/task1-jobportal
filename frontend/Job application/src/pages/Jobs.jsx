@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars, react-hooks/exhaustive-deps, react-hooks/set-state-in-effect */
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { getJobs } from '../services/api';
 import JobCard from '../components/JobCard';
 
@@ -98,7 +99,17 @@ const Jobs = () => {
               Showing page <strong>{page}</strong> of <strong>{totalPages}</strong> ({totalJobs} total job{totalJobs !== 1 ? 's' : ''})
             </p>
             <div className="jobs-grid">
-              {jobs.map((job) => <JobCard key={job._id} job={job} />)}
+              {jobs.map((job, index) => (
+                <motion.div
+                  key={job._id}
+                  initial={{ opacity: 0, y: 35 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.1 }}
+                  transition={{ duration: 0.45, delay: (index % 6) * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <JobCard job={job} />
+                </motion.div>
+              ))}
             </div>
 
             {/* Pagination Controls */}

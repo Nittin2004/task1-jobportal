@@ -134,7 +134,7 @@ const StarRating = ({ rating }) => (
   </span>
 );
 
-const CourseCard = ({ course, onEnroll }) => {
+const CourseCard = ({ course, onEnroll, onViewCourse }) => {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -182,14 +182,13 @@ const CourseCard = ({ course, onEnroll }) => {
         
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           {course.enrolled ? (
-            <Link to={`/academy/course/${course.id}`} style={{textDecoration: 'none', flex: 1}}>
-              <button
-                className="btn-primary academy-enroll-btn"
-                style={{ background: '#10b981', color: '#fff', border: 'none', width: '100%', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
-              >
-                Start Learning ▶
-              </button>
-            </Link>
+            <button
+              className="btn-primary academy-enroll-btn"
+              onClick={() => onViewCourse(course)}
+              style={{ background: '#10b981', color: '#fff', border: 'none', flex: 1, padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+            >
+              Start Learning ▶
+            </button>
           ) : (
             <>
               <button
@@ -199,14 +198,13 @@ const CourseCard = ({ course, onEnroll }) => {
               >
                 Enroll Free
               </button>
-              <Link to={`/academy/course/${course.id}`} style={{textDecoration: 'none', flex: 1}}>
-                <button
-                  className="btn-secondary academy-enroll-btn"
-                  style={{ border: `1px solid ${course.color}`, color: course.color, background: 'transparent', width: '100%', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
-                >
-                  View Course
-                </button>
-              </Link>
+              <button
+                className="btn-secondary academy-enroll-btn"
+                onClick={() => onViewCourse(course)}
+                style={{ border: `1px solid ${course.color}`, color: course.color, background: 'transparent', flex: 1, padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                View Course
+              </button>
             </>
           )}
         </div>
@@ -246,6 +244,18 @@ const AcademyDashboard = () => {
     } catch {
       toast.error('Enrollment failed');
     }
+  };
+
+  const handleViewCourse = (course) => {
+    if (!user) {
+      toast.error('Please login to view courses');
+      return navigate('/login');
+    }
+    if (!enrolledIds.includes(course.id)) {
+      toast.error('You must enroll in this course first!');
+      return;
+    }
+    navigate(`/academy/course/${course.id}`);
   };
 
   return (
@@ -331,6 +341,7 @@ const AcademyDashboard = () => {
               key={course.id}
               course={{ ...course, enrolled: enrolledIds.includes(course.id) }}
               onEnroll={handleEnroll}
+              onViewCourse={handleViewCourse}
             />
           ))}
         </div>

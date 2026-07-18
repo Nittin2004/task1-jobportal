@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
+import ModernScrollEffects from './components/ModernScrollEffects';
 import ErrorBoundary from './components/ErrorBoundary';
 
 import LandingPage from './pages/LandingPage';
@@ -44,6 +45,7 @@ function AppLayout() {
   return (
     <>
       <ScrollToTop />
+      <ModernScrollEffects />
     
       <Toaster position="top-right" />
       {!isDashboard && !isDSA && <Navbar />}

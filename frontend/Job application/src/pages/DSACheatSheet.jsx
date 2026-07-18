@@ -1595,16 +1595,11 @@ const DSACheatSheet = ({ embedded }) => {
               {/* ── Topbar ── */}
               <div className="dsa2-overlay-topbar">
                 <button
+                  className="dsa2-back-btn"
                   onClick={() => setSelectedQ(null)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '0.4rem',
-                    background: 'none', border: '1px solid var(--dsa-border)', color: 'var(--dsa-text-muted)',
-                    padding: '0.3rem 0.7rem', borderRadius: '6px', cursor: 'pointer',
-                    fontSize: '0.8rem', fontWeight: 600, transition: 'all 0.15s',
-                    flexShrink: 0, whiteSpace: 'nowrap',
-                  }}
                 >
-                  ← <span className="dsa2-back-btn-text">Back</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                  <span className="dsa2-back-btn-text">Back to List</span>
                 </button>
                 <div className="dsa2-topbar-title">
                   <span style={{ color: 'var(--dsa-text-muted)', fontSize: '0.78rem', flexShrink: 0 }}>
@@ -1619,15 +1614,8 @@ const DSACheatSheet = ({ embedded }) => {
                 <button
                   className="dsa2-theme-toggle-btn"
                   onClick={() => setIsLightMode(!isLightMode)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '0.4rem',
-                    background: 'none', border: '1px solid var(--dsa-border)', color: 'var(--dsa-text-muted)',
-                    padding: '0.3rem 0.7rem', borderRadius: '6px', cursor: 'pointer',
-                    fontSize: '0.8rem', fontWeight: 600, transition: 'all 0.15s',
-                    flexShrink: 0, whiteSpace: 'nowrap',
-                  }}
                 >
-                  {isLightMode ? '🌙' : '☀️'} <span style={{ display: isMobile ? 'none' : 'inline' }}>{isLightMode ? 'Dark' : 'Light'}</span>
+                  {isLightMode ? '🌙' : '☀️'} <span style={{ display: isMobile ? 'none' : 'inline' }}>{isLightMode ? 'Dark Mode' : 'Light Mode'}</span>
                 </button>
               </div>
 
